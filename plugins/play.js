@@ -1,4 +1,4 @@
-import { ytmp3, ytmp4 } from '../lib/dl.js';
+import { ytmp3, ytmp4 } from '../lib/sadl.js';
 import _0x19f0dc from 'yt-search';
 const youtubeRegexID = /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([a-zA-Z0-9_-]{11})/;
 const handler = async (_0x989059, {
