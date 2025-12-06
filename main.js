@@ -1,4 +1,4 @@
-process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '1'
+/*process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '1'
 import './config.js';
 import { createRequire } from 'module'
 import path, { join } from 'path'
@@ -486,4 +486,4 @@ function clockString(ms) {
   const s = isNaN(ms) ? '--' : Math.floor(ms / 1000) % 60;
   return [d, 'd ️', h, 'h ', m, 'm ', s, 's '].map((v) => v.toString().padStart(2, 0)).join('');
 }
-_quickTest().catch(console.error);
+_quickTest().catch(console.error);*/
