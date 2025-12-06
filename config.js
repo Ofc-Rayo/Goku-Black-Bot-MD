@@ -49,8 +49,8 @@ global.fetch = fetch;
 global.axios = axios;
 global.moment = moment;
 //############
-global.jadi = "Data/Sesiones/Subbots"
-global.Sesion = "Data/Sesiones/Principal"
+global.sessions = 'sessions/session-bot'
+global.jadi = 'sessions/session-sub'
 global.dbname = "Data/database.json"
 
 //Tiempo del bot
