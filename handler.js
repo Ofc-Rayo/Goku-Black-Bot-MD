@@ -207,24 +207,14 @@ const isAllowed = allowedBots.includes(this.user.jid)
         if (m.isBaileys)
             return
         m.exp += Math.ceil(Math.random() * 10)
-                let usedPrefix
-        let _user = global.db.data && global.db.data.users && global.db.data.users[m.chat][m.sender]
-        const groupMetadata = (m.isGroup ? ((conn.chats[m.chat] || {}).metadata || await this.groupMetadata(m.chat).catch(_ => null)) : {}) || {}
-        const participants = (m.isGroup ? groupMetadata.participants : []) || []
-const normalizeJid = jid => jid?.replace(/[^0-9]/g, '')
-const cleanJid = jid => jid?.split(':')[0] || ''
-const senderNum = normalizeJid(m.sender)
-const botNums = [this.user.jid, this.user.lid].map(j => normalizeJid(cleanJid(j)))
-const user = m.isGroup 
-  ? participants.find(u => normalizeJid(u.id) === senderNum) 
-  : {}
-const bot = m.isGroup 
-  ? participants.find(u => botNums.includes(normalizeJid(u.id))) 
-  : {}
-const isRAdmin = user?.admin === 'superadmin'
-const isAdmin = isRAdmin || user?.admin === 'admin'
-const isBotAdmin = !!bot?.admin     
-
+             let usedPrefix
+const groupMetadata = m.isGroup ? { ...(conn.chats[m.chat]?.metadata || await this.groupMetadata(m.chat).catch(_ => null) || {}), ...(((conn.chats[m.chat]?.metadata || await this.groupMetadata(m.chat).catch(_ => null) || {}).participants) && { participants: ((conn.chats[m.chat]?.metadata || await this.groupMetadata(m.chat).catch(_ => null) || {}).participants || []).map(p => ({ ...p, id: p.jid, jid: p.jid, lid: p.lid })) }) } : {}
+const participants = ((m.isGroup ? groupMetadata.participants : []) || []).map(participant => ({ id: participant.jid, jid: participant.jid, lid: participant.lid, admin: participant.admin }))
+const userGroup = (m.isGroup ? participants.find((u) => conn.decodeJid(u.jid) === m.sender) : {}) || {}
+const botGroup = (m.isGroup ? participants.find((u) => conn.decodeJid(u.jid) == this.user.jid) : {}) || {}
+const isRAdmin = userGroup?.admin == "superadmin" || false
+const isAdmin = isRAdmin || userGroup?.admin == "admin" || false
+const isBotAdmin = botGroup?.admin || false
         const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins')
         for (let name in global.plugins) {
             let plugin = global.plugins[name]
