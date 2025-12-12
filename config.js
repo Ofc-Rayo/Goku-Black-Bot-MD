@@ -26,9 +26,17 @@ global.APIKeys = {
   'https://api-fgmods.ddns.net': 'TU-APIKEY'
 }
 
-// Sticker WM & prefijo
-global.prefijo = "`"; // déjalo en blanco para multi - prefijo
-global.packsticker = '𝐆𝐨𝐤𝐮-𝐁𝐥𝐚𝐜𝐤-𝐁𝐨𝐭-𝐌𝐃 𖧷'
+global.prefijo = ""
+global.packsticker = (nombre) => `°.⎯⃘̶⎯̸⎯ܴ⎯̶᳞͇ࠝ⎯⃘̶⎯̸⎯ܴ⎯̶᳞͇ࠝ⎯⃘̶⎯̸.°
+ᰔᩚ Usuario: ${nombre}
+❀ Bot: ${global.botname}
+✦ Fecha: ${global.fecha}
+ⴵ Hora: ${global.tiempo}`;
+
+global.packsticker2 = `°.⎯⃘̶⎯̸⎯ܴ⎯̶᳞͇ࠝ⎯⃘̶⎯̸⎯ܴ⎯̶᳞͇ࠝ⎯⃘̶⎯̸.°
+
+${global.dev}`
+
 global.packname = '𝐆𝐨𝐤𝐮-𝐁𝐥𝐚𝐜𝐤-𝐁𝐨𝐭-𝐌𝐃 💥'
 global.author = 'ꭈׁׅɑׁׅᨮׁׅ֮ᨵׁׅׅ'
 global.wm = 'ᘜOKᑌ-ᗷᒪᗩᑕK-ᗷOT-ᗰᗪ ＼ʕ •ᴥ•ʔ／'
@@ -49,19 +57,17 @@ global.dmoji = '🤭'
 global.done = '✅'
 global.error = '❌' 
 global.xmoji = '🔥' 
-//############
-//global.imagen = fs.readFileSync('./src/img.jpg');
+
 global.cheerio = cheerio;
 global.fs = fs;
 global.fetch = fetch;
 global.axios = axios;
 global.moment = moment;
-//############
+
 global.sessions = 'sessions/session-bot'
 global.jadi = 'sessions/session-sub'
 global.dbname = "Data/database.json"
 
-//Tiempo del bot
 global.d = new Date(new Date + 3600000)
 global.locale = 'es'
 global.dia = d.toLocaleDateString(locale, { weekday: 'long' })
@@ -69,11 +75,11 @@ global.fecha = d.toLocaleDateString('es', { day: 'numeric', month: 'numeric', ye
 global.mes = d.toLocaleDateString('es', { month: 'long' })
 global.año = d.toLocaleDateString('es', { year: 'numeric' })
 global.tiempo = d.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true })
-global.botdate = `⫹⫺ Date :  ${moment.tz('America/Los_Angeles').format('DD/MM/YY')}` //Asia/Jakarta
+global.botdate = `⫹⫺ Date :  ${moment.tz('America/Los_Angeles').format('DD/MM/YY')}`
 global.bottime = `𝗧 𝗜 𝗠 𝗘 : ${moment.tz('America/Los_Angeles').format('HH:mm:ss')}`
 
 global.multiplier = 250
-global.maxwarn = '2' // máxima advertencias
+global.maxwarn = '2'
 
 let file = fileURLToPath(import.meta.url)
 watchFile(file, () => {
