@@ -7,10 +7,7 @@ import chalk from 'chalk'
 
 const { proto } = (await import('@whiskeysockets/baileys')).default
 const isNumber = x => typeof x === 'number' && !isNaN(x)
-const delay = ms => isNumber(ms) && new Promise(resolve => setTimeout(function () {
-    clearTimeout(this)
-    resolve()
-}, ms))
+const delay = ms => isNumber(ms) && new Promise(resolve => setTimeout(resolve, ms))
 
 export async function handler(chatUpdate) {
     this.msgqueque = this.msgqueque || []
@@ -172,10 +169,9 @@ export async function handler(chatUpdate) {
                 }
             }
             // Comando principal
-            if (typeof plugin !== 'function' && typeof plugin.default !== 'function') continue
-            let _pluginFunc = typeof plugin === 'function' ? plugin : plugin.default
-            // Prefix y test de comando
-            let _prefix = plugin.customPrefix ? plugin.customPrefix : global.db.data.settings[this?.user?.jid].noprefix ? "" : conn.prefix ? conn.prefix : global.prefix
+            let _pluginFunc = typeof plugin.default === 'function' ? plugin.default : plugin
+            if (typeof _pluginFunc !== 'function') continue
+            let _prefix = plugin.customPrefix ? plugin.customPrefix : global.db.data.settings[this?.user?.jid]?.noprefix ? "" : conn.prefix ? conn.prefix : global.prefix
             let str2Regex = str => str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&')
             let match = (_prefix instanceof RegExp ?
                 [[_prefix.exec(m.text), _prefix]] :
@@ -188,12 +184,7 @@ export async function handler(chatUpdate) {
                         [[new RegExp(str2Regex(_prefix)).exec(m.text), new RegExp(str2Regex(_prefix))]] :
                         [[[], new RegExp]]
             ).find(p => p[1])
-            // before
-            if (typeof plugin.before === 'function' && await plugin.before.call(this, m, {
-                match, conn: this, participants: parts, groupMetadata: gpmt, user: usr, isROwner, isOwner, isRA, isA, isPrems, chatUpdate, __dirname: ___dirname, __filename
-            })) continue
-            // test comando
-            if (!match) continue
+            if (!match || !match[0]) continue
             let noPrefix = m.text.replace(match[0], '')
             let [command, ...args] = noPrefix.trim().split` `.filter(v => v)
             args = args || []
@@ -201,7 +192,6 @@ export async function handler(chatUpdate) {
             let text = _args.join` `
             command = (command || '').toLowerCase()
             let fail = plugin.fail || global.dfail
-            // Revisar si acepta el comando
             let isAccept = plugin.command instanceof RegExp ? plugin.command.test(command) :
                 Array.isArray(plugin.command) ? plugin.command.some(cmd => cmd instanceof RegExp ? cmd.test(command) : cmd === command) :
                 typeof plugin.command === 'string' ? plugin.command === command : false
