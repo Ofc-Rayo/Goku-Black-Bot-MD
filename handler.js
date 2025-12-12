@@ -112,7 +112,6 @@ if (typeof user !== 'object') {
             if (typeof settings !== 'object') global.db.data.settings[this.user.jid] = {}
             if (settings) {
                 if (!('self' in settings)) settings.self = false
-                if (!('antiPrivate' in settings)) settings.antiPrivate = true
                 if (!('autoread' in settings)) settings.autoread = false
                 if (!('restrict' in settings)) settings.restrict = false
                 if (!('actives' in settings)) settings.actives = []
@@ -121,7 +120,6 @@ if (typeof user !== 'object') {
                 if (!('logo' in settings)) settings.logo = null
             } else global.db.data.settings[this.user.jid] = {
                 self: false,
-                antiPrivate: true,
                 autoread: false,
                 restrict: false, 
                 actives: [],
@@ -489,33 +487,20 @@ export async function participantsUpdate({ id, participants, action }) {
     let chat = global.db.data.chats[id] || {}
     let text = ''
     switch (action) {
-                case 'add':
-                case 'remove':
+        case 'add':
+        case 'remove':
             if (chat.welcome) {
                 let groupMetadata = await this.groupMetadata(id) || (conn.chats[id] || {}).metadata
                 for (let user of participants) {
 text = (action === 'add' ? (chat.sWelcome || this.welcome || conn.welcome || 'Bienvenido, @user').replace('@group', await this.getName(id)).replace('@desc', groupMetadata.desc?.toString() || 'Desconocido') :
                             (chat.sBye || this.bye || conn.bye || 'Adiós, @user')).replace('@user', '@' + user.split('@')[0])
-let ppwel = "https://files.catbox.moe/t8m8fc.jpg" //global.db.data.settings[this.user.jid].logo || await this.profilePictureUrl(user, "image").catch(_ => logo)
-let ppbye = "https://files.catbox.moe/julp8d.jpg"      
-
-this.sendFile(id, action === "add" ? ppwel : ppbye , 'pp.jpg', text, null, false, { mentions: [user] })
+let pp = global.db.data.settings[this.user.jid].logo || await this.profilePictureUrl(user, "image").catch(_ => logo)
+this.sendFile(id, action === 'add' ? pp : pp, 'pp.jpg', text, null, false, { mentions: [user] })
                     }
                 }
 
             break
-        case 'promote':
-            text = (chat.sPromote || this.spromote || conn.spromote || '@user ahora es administrador')
-        case 'demote':
-            let pp = await this.profilePictureUrl(participants[0], 'image').catch(_ => logo) 
-            if (!text)
-                text = (chat.sDemote || this.sdemote || conn.sdemote || '@user ya no es administrador')
-            text = text.replace('@user', '@' + participants[0].split('@')[0])
-            if (chat.detect)    
-            this.sendFile(id, pp, 'pp.jpg', text, null, false, { mentions: this.parseMention(text) })
-            //this.sendMessage(id, { text, mentions: this.parseMention(text) })
-            break
-    }
+        }
 }
 
 export async function groupsUpdate(groupsUpdate) {
@@ -578,7 +563,6 @@ global.dfail = (type, m, conn) => {
     }[type]
     if (msg) return m.reply(msg)
 }
-
 
 let file = global.__filename(import.meta.url, true)
 watchFile(file, async () => {
