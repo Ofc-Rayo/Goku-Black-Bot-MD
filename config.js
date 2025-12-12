@@ -26,7 +26,7 @@ global.APIKeys = {
   'https://api-fgmods.ddns.net': 'TU-APIKEY'
 }
 
-global.prefijo = ""
+global.prefijo = "."
 global.packsticker = (nombre) => `°.⎯⃘̶⎯̸⎯ܴ⎯̶᳞͇ࠝ⎯⃘̶⎯̸⎯ܴ⎯̶᳞͇ࠝ⎯⃘̶⎯̸.°
 ᰔᩚ Usuario: ${nombre}
 ❀ Bot: ${global.botname}
