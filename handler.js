@@ -207,7 +207,7 @@ const isAllowed = allowedBots.includes(this.user.jid)
         if (m.isBaileys)
             return
         m.exp += Math.ceil(Math.random() * 10)
-        let usedPrefix
+                let usedPrefix
         let _user = global.db.data && global.db.data.users && global.db.data.users[m.chat][m.sender]
         const groupMetadata = (m.isGroup ? ((conn.chats[m.chat] || {}).metadata || await this.groupMetadata(m.chat).catch(_ => null)) : {}) || {}
         const participants = (m.isGroup ? groupMetadata.participants : []) || []
@@ -223,7 +223,7 @@ const bot = m.isGroup
   : {}
 const isRAdmin = user?.admin === 'superadmin'
 const isAdmin = isRAdmin || user?.admin === 'admin'
-const isBotAdmin = !!bot?.admin      
+const isBotAdmin = !!bot?.admin     
 
         const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins')
         for (let name in global.plugins) {
