@@ -50,6 +50,7 @@ ${usedPrefix + command} -c -blur Texto | Autor
 `
     return m.reply(helpText)
   }
+
   let stiker = false
   try {
     let q = m.quoted ? m.quoted : m
@@ -62,12 +63,9 @@ ${usedPrefix + command} -c -blur Texto | Autor
       }
 
       let img = await q.download?.()
-
       if (!img) {
         return conn.reply(m.chat, `🌿 Responde a una *imagen/video/gif* para convertirlo en sticker. Para saber la lista de efectos y formas usa *"---i"*`, m)
       }
-
-      let out
 
       let texto1 = global.wm
       let texto2 = global.author
@@ -76,7 +74,8 @@ ${usedPrefix + command} -c -blur Texto | Autor
       if (/video/g.test(mime) || /gif/g.test(mime) || q.isAnimated) {
         stiker = await sticker(img, false, marca[0], marca[1])
       } else {
-        const type = args.includes('-i') ? 'expand'
+
+        const type = args.includes('-i') ? 'contain'
                     : args.includes('-x') ? 'cover'
                     : args.includes('-c') ? 'circle'
                     : args.includes('-t') ? 'triangle'
@@ -136,50 +135,37 @@ ${usedPrefix + command} -c -blur Texto | Autor
           image = image.composite([{ input: Buffer.from(mask[type]), blend: 'dest-in' }])
         }
 
-        if (effect === 'blur') {
-          image = image.blur(5)
-        } else if (effect === 'sepia') {
+        if (effect === 'blur') image = image.blur(5)
+        else if (effect === 'sepia') {
           image = image.recomb([
             [0.393, 0.769, 0.189],
             [0.349, 0.686, 0.168],
             [0.272, 0.534, 0.131],
-          ]);
-        } else if (effect === 'sharpen') {
-          image = image.sharpen()
-        } else if (effect === 'brighten') {
-          image = image. Clahe()
-        } else if (effect === 'darken') {
-          image = image. Clahe({ clipLimit: 10 })
-        } else if (effect === 'invert') {
-          image = image.negate()
-        } else if (effect === 'grayscale') {
-          image = image.greyscale()
-        } else if (effect === 'rotate90') {
-          image = image.rotate(90)
-        } else if (effect === 'rotate180') {
-          image = image.rotate(180)
-        } else if (effect === 'flip') {
-          image = image.flip()
-        } else if (effect === 'flop') {
-          image = image.flop()
-        } else if (effect === 'normalice') {
-          image = image.normalise()
-        } else if (effect === 'negate') {
-          image = image.negate()
-        } else if (effect === 'tint') {
-          image = image.tint({r: 255, g: 100, b: 100})
-        }
+          ])
+        } else if (effect === 'sharpen') image = image.sharpen()
+        else if (effect === 'brighten') image = image.modulate({ brightness: 1.2 })
+        else if (effect === 'darken') image = image.modulate({ brightness: 0.8 })
+        else if (effect === 'invert') image = image.negate()
+        else if (effect === 'grayscale') image = image.greyscale()
+        else if (effect === 'rotate90') image = image.rotate(90)
+        else if (effect === 'rotate180') image = image.rotate(180)
+        else if (effect === 'flip') image = image.flip()
+        else if (effect === 'flop') image = image.flop()
+        else if (effect === 'normalice') image = image.normalize()
+        else if (effect === 'negate') image = image.negate()
+        else if (effect === 'tint') image = image.tint({ r: 255, g: 100, b: 100 })
 
         const buffer = await image.webp().toBuffer()
 
         let filteredText = txt.replace(/-\w+/g, '').trim()
 
         let pack = global.wm
-        let author = "" //global.author
+        let author = ""
+
         if (filteredText) {
           const parts = filteredText.split("|")
           pack = (parts[0] || '').trim() || global.wm
-          author = (parts[1] || '').trim() //|| global.author
+          author = (parts[1] || '').trim()
         }
 
         stiker = await sticker(buffer, false, pack, author)
@@ -203,6 +189,10 @@ handler.command = ['s', 'sticker']
 
 export default handler
 
-const isUrl = (text) => {
-  return text.match(new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)(jpe?g|gif|png)/, 'gi'))
-}
+const isUrl = (text) =>
+  text.match(
+    new RegExp(
+      /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)(jpe?g|gif|png)/,
+      'gi'
+    )
+  )
