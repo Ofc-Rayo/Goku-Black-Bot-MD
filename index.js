@@ -379,9 +379,10 @@ return false
 }}
 
 async function joinChannels(conn) {
-  for (const value of Object.values(global.my)) {
+  if (!global.my) return;
+  for (const value of Object.values(global.my || {})) {
     if (typeof value === 'string' && value.endsWith('@newsletter')) {
-    await conn.newsletterFollow(value).catch(() => {})
+      await conn.newsletterFollow(value).catch(() => {})
     }
   }
 }
