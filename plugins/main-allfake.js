@@ -73,7 +73,7 @@ let correo = ''
 global.redes = [canal, comunidad, git, github, correo].getRandom()
 
 let category = "imagen"
-const db = './src/database/db.json'
+const db = './goku/datos/db.json'
 const db_ = JSON.parse(fs.readFileSync(db))
 const random = Math.floor(Math.random() * db_.links[category].length)
 const randomlink = db_.links[category][random]
