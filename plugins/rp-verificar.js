@@ -53,7 +53,6 @@ let handler = async function (m, { conn, text, usedPrefix, command }) {
                 title: '✧ Usuario Verificado ✧',
                 body: textbot,
                 thumbnailUrl: pp,
-                sourceUrl: channel,
                 mediaType: 1,
                 showAdAttribution: true,
                 renderLargerThumbnail: true
