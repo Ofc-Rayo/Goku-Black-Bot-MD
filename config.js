@@ -28,10 +28,18 @@ global.APIKeys = {
 
 // Sticker WM & prefijo
 global.prefijo = "`"; // déjalo en blanco para multi - prefijo
-global.packname = "Goku-Black-Bot-MD";
-global.footer = "ᴅᴇᴠᴇʟᴏᴘᴇᴅ ʙʏ ɪvan";
-global.wm = "Goku-Black-Bot-MD 💥";
-global.author = "ɪvan"
+global.packsticker = '𝐆𝐨𝐤𝐮-𝐁𝐥𝐚𝐜𝐤-𝐁𝐨𝐭-𝐌𝐃 𖧷'
+global.packname = '𝐆𝐨𝐤𝐮-𝐁𝐥𝐚𝐜𝐤-𝐁𝐨𝐭-𝐌𝐃 💥'
+global.author = 'ꭈׁׅɑׁׅᨮׁׅ֮ᨵׁׅׅ'
+global.wm = 'ᘜOKᑌ-ᗷᒪᗩᑕK-ᗷOT-ᗰᗪ ＼ʕ •ᴥ•ʔ／'
+global.titulowm = 'ɢᴏᴋᴜ-ʙʟᴀᴄᴋ-ʙᴏᴛ-ᴍᴅ ➶➴'
+global.titulowm2 = '𝙂𝙤𝙠𝙪-𝘽𝙡𝙖𝙘𝙠-𝘽𝙤𝙩-𝙈𝘿 ☉'
+global.igfg = '𝘎𝘖𝘒𝘜-𝘉𝘓𝘈𝘊𝘒-𝘉𝘖𝘛-𝘔𝘋 💫'
+global.botname = '𝖦𝖮𝖪𝖴-𝖡𝖫𝖠𝖢𝖪-𝖡𝖮𝖳-𝖬𝖣'
+global.dev = 'Ｒａｙｏ Ｏｆｃ'
+global.textbot = '𝑮𝒐𝒌𝒖-𝑩𝒍𝒂𝒄𝒌-𝑩𝒐𝒕-𝑴𝑫 ☄︎'
+global.gt = '𝐺𝑜𝑘𝑢-𝐵𝑙𝑎𝑐𝑘-𝐵𝑜𝑡-𝑀𝐷 💥'
+global.namechannel = 'ᥬ𝑮𝑶𝑲𝑼-𝑩𝑳𝑨𝑪𝑲-𝑩𝑶𝑻-𝑴𝑫᭄'
 global.link = '';
 global.logo = ''; 
 
