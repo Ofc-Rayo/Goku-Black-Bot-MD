@@ -2,7 +2,7 @@ import axios from 'axios';
 import cheerio from 'cheerio';
 
 let handler = async (m, { conn, text, args, command, usedPrefix }) => {
-    if (!text) throw m.reply(`${emoji} Por favor, ingresa el link de la imagen de tiktok a descargar.`)
+    if (!text) throw m.reply('🍟 Por favor, ingresa el link de la imagen de tiktok a descargar.')
 
     let mainUrl = `https://dlpanda.com/id?url=${text}&token=G7eRpMaa`;
     let backupUrl = `https://dlpanda.com/id?url=${text}&token51=G32254GLM09MN89Maa`;
@@ -72,7 +72,7 @@ let handler = async (m, { conn, text, args, command, usedPrefix }) => {
         }
 
         if (asd[0].imgSrc.length === 0) {
-            throw `${emoji2} No se encontraron resultados...`;
+            throw '🍟 No se encontraron resultados...';
         }
         await m.react('🕓');
         for (let i of asd[0].imgSrc) {
