@@ -134,9 +134,6 @@ m
 handler.help = ['dropmail']
 handler.tags = ['tools']
 handler.command = /^(dropmail)$/i
-handler.limit = true
-handler.register = true
-handler.private = true
 
 export default handler
 
