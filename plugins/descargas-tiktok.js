@@ -40,6 +40,5 @@ function createSearchCaption(data) {
 handler.help = ['tiktok', 'tt']
 handler.tags = ['downloader']
 handler.command = ['tiktok', 'tt', 'tiktoks', 'tts']
-handler.group = true
 
 export default handler
