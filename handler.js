@@ -46,6 +46,7 @@ export async function handler(chatUpdate) {
                     role: 'Novato',
                     autolevelup: false,
                     chatbot: false,
+                    premium: false,
                 }
             }
             let chat = global.db.data.chats[m.chat]
@@ -166,13 +167,17 @@ export async function handler(chatUpdate) {
         if (opts['swonly'] && m.chat !== 'status@broadcast') return
         if (typeof m.text !== 'string') m.text = ''
 
+        // --------- DETECCIÓN MEJORADA DE OWNER/MODS/PREMS CON SOPORTE @lid ---------
+        const detectwhat = m.sender.includes('@lid') ? '@lid' : '@s.whatsapp.net'
         const sendNum = m.sender.replace(/[^0-9]/g, '')
         const isROwner = [conn.decodeJid(global.conn.user.id), ...global.owner.map(([number]) => number)]
-            .map(v => v.replace(/[^0-9]/g, ''))
-            .includes(sendNum)
-        const isOwner = isROwner
-        const isMods = isOwner || global.mods.map(v => v.replace(/[^0-9]/g, '') + '@s.whatsapp.net').includes(m.sender)
-        const isPrems = isROwner || global.prems.map(v => v.replace(/[^0-9]/g, '') + '@s.whatsapp.net').includes(m.sender)
+            .map(v => v.replace(/[^0-9]/g, '') + detectwhat)
+            .includes(m.sender)
+        const isOwner = isROwner || m.fromMe
+        const isMods = isROwner || global.mods.map(v => v.replace(/[^0-9]/g, '') + detectwhat).includes(m.sender)
+        let _user = global.db.data && global.db.data.users && global.db.data.users[m.chat] && global.db.data.users[m.chat][m.sender]
+        const isPrems = isROwner || global.prems.map(v => v.replace(/[^0-9]/g, '') + detectwhat).includes(m.sender) || (_user && _user.premium === true)
+        // ---------------------------------------------------------------------------
 
         if (opts['queque'] && m.text && !(isMods || isPrems)) {
             let queque = this.msgqueque, time = 1000 * 5
@@ -187,7 +192,6 @@ export async function handler(chatUpdate) {
         if (m.isBaileys) return
         m.exp += Math.ceil(Math.random() * 10)
         let usedPrefix
-        let _user = global.db.data && global.db.data.users && global.db.data.users[m.chat][m.sender]
 
         // --- BUCLE DE PLUGINS 100% FUNCIONAL Y COMPATIBLE ---
         const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins')
@@ -259,9 +263,9 @@ export async function handler(chatUpdate) {
 
                 if (!isAccept) continue
                 m.plugin = name
-                if (m.chat in global.db.data.chats || m.sender in global.db.data.users) {
+                if (m.chat in global.db.data.chats || m.sender in (global.db.data.users[m.chat] || {})) {
                     let chat = global.db.data.chats[m.chat]
-                    let user = global.db.data.users[m.chat][m.sender]
+                    let user = global.db.data.users[m.chat] && global.db.data.users[m.chat][m.sender]
                     if (name !== 'owner-unbanchat.js' && chat?.isBanned)
                         return 
                     if (name !== 'owner-unbanuser.js' && user?.banned)
@@ -276,17 +280,17 @@ export async function handler(chatUpdate) {
                 if (plugin.botAdmin && !isBotAdmin) { fail('botAdmin', m, this); continue }
                 if (plugin.admin && !isA) { fail('admin', m, this); continue }
                 if (plugin.private && m.isGroup) { fail('private', m, this); continue }
-                if (plugin.register == true && _user.registered == false) { fail('unreg', m, this); continue }
+                if (plugin.register == true && _user && _user.registered == false) { fail('unreg', m, this); continue }
                 m.isCommand = true
                 let xp = 'exp' in plugin ? parseInt(plugin.exp) : 17
                 if (xp > 200)
                     m.reply('chirrido -_-')
                 else m.exp += xp
-                if (!isPrems && plugin.diamond && global.db.data.users[m.chat][m.sender].diamond < plugin.diamond * 1) {
+                if (!isPrems && plugin.diamond && _user && global.db.data.users[m.chat][m.sender].diamond < plugin.diamond * 1) {
                     this.reply(m.chat, `✳️ Tus diamantes se agotaron\nuse el siguiente comando para comprar más diamantes \n*buy* <cantidad> \n*buyall*`, m)
                     continue
                 }
-                if (plugin.level > _user.level) {
+                if (_user && plugin.level > _user.level) {
                     this.reply(m.chat, `✳️ nivel requerido ${plugin.level} para usar este comando. \nTu nivel ${_user.level}`, m)
                     continue
                 }
@@ -348,7 +352,7 @@ export async function handler(chatUpdate) {
         }
         let user, stats = global.db.data.stats
         if (m) {
-            if (m.sender && (user = global.db.data.users[m.chat][m.sender])) {
+            if (m.sender && global.db.data.users[m.chat] && (user = global.db.data.users[m.chat][m.sender])) {
                 user.exp += m.exp
                 user.diamond -= m.diamond * 1
             }
@@ -388,7 +392,6 @@ export async function handler(chatUpdate) {
 export async function participantsUpdate({ id, participants, action }) {
     if (opts['self'])
         return
-    // if (id in conn.chats) return // First login will spam
     if (this.isInit)
         return
     if (global.db.data == null)
@@ -401,15 +404,22 @@ export async function participantsUpdate({ id, participants, action }) {
             if (chat.welcome) {
                 let groupMetadata = await this.groupMetadata(id) || (conn.chats[id] || {}).metadata
                 for (let user of participants) {
-text = (action === 'add' ? (chat.sWelcome || this.welcome || conn.welcome || 'Bienvenido, @user').replace('@group', await this.getName(id)).replace('@desc', groupMetadata.desc?.toString() || 'Desconocido') :
-                            (chat.sBye || this.bye || conn.bye || 'Adiós, @user')).replace('@user', '@' + user.split('@')[0])
-let pp = global.db.data.settings[this.user.jid].logo || await this.profilePictureUrl(user, "image").catch(_ => logo)
-this.sendFile(id, action === 'add' ? pp : pp, 'pp.jpg', text, null, false, { mentions: [user] })
-                    }
+                    text = (action === 'add' ? (chat.sWelcome || this.welcome || conn.welcome || 'Bienvenido, @user').replace('@group', await this.getName(id)).replace('@desc', groupMetadata.desc?.toString() || 'Desconocido') :
+                        (chat.sBye || this.bye || conn.bye || 'Adiós, @user')).replace('@user', '@' + user.split('@')[0])
+                    let pp = global.db.data.settings[this.user.jid].logo || await this.profilePictureUrl(user, "image").catch(_ => global.logo || 'https://i.ibb.co/2WzLyGk/profile.jpg')
+                    this.sendFile(id, action === 'add' ? pp : pp, 'pp.jpg', text, null, false, { mentions: [user] })
                 }
-
+            }
             break
-        }
+        case 'promote':
+        case 'demote':
+            if (chat.detect) {
+                text = (action === 'promote' ? (chat.sPromote || this.sPromote || conn.sPromote || '@user ahora es admin') : 
+                       (chat.sDemote || this.sDemote || conn.sDemote || '@user ya no es admin')).replace('@user', '@' + participants[0].split('@')[0])
+                this.sendMessage(id, { text, mentions: this.parseMention(text) })
+            }
+            break
+    }
 }
 
 export async function groupsUpdate(groupsUpdate) {
@@ -422,8 +432,8 @@ export async function groupsUpdate(groupsUpdate) {
         if (!chats?.detect) continue
         if (groupUpdate.desc) text = (chats.sDesc || this.sDesc || conn.sDesc || 'Descripción cambiada a \n@desc').replace('@desc', groupUpdate.desc)
         if (groupUpdate.subject) text = (chats.sSubject || this.sSubject || conn.sSubject || 'El nombre del grupo cambió a \n@group').replace('@group', groupUpdate.subject)
-        if (groupUpdate.icon) text = (chats.sIcon || this.sIcon || conn.sIcon || 'El icono del grupo cambió a').replace('@icon', groupUpdate.icon)
-        if (groupUpdate.revoke) text = (chats.sRevoke || this.sRevoke || conn.sRevoke || 'El enlace del grupo cambia a\n@revoke').replace('@revoke', groupUpdate.revoke)
+        if (groupUpdate.icon) text = (chats.sIcon || this.sIcon || conn.sIcon || 'El icono del grupo cambió')
+        if (groupUpdate.revoke) text = (chats.sRevoke || this.sRevoke || conn.sRevoke || 'El enlace del grupo cambió a\n@revoke').replace('@revoke', groupUpdate.revoke)
         if (!text) continue
         await this.sendMessage(id, { text, mentions: this.parseMention(text) })
     }
@@ -460,16 +470,16 @@ Para desactivar esta función, escriba
 global.dfail = (type, m, conn) => {
     let msg = {
         rowner: '👑 Este comando solo puede ser utilizado por el *Creador del bot*',
-        owner: '🔱 Este comando solo puede ser utilizado por el *Dueño del Bot*',
-        mods: '🔰  Esta función es solo para *Para moderadores del Bot*',
-        premium: '💠 Este comando es solo para miembros *Premium*\n\nEscribe */premium* para más info',
-        group: '⚙️ ¡Este comando solo se puede usar en grupos!',
-        private: '📮 Este comando solo se puede usar en el chat *privado del Bot*',
-        admin: '🛡️ Este comando es solo para *Admins* del grupo',
-        botAdmin: '💥 ¡Para usar este comando debo ser *Administrador!*',
-        unreg: '📇 Regístrese para usar esta función  Escribiendo:\n\n*/reg nombre.edad*\n\n📌Ejemplo : */reg Fz.16*',
-        restrict: '🔐 Esta característica está *deshabilitada*'
-    }[type]
+        owner: '👑 Este comando solo puede ser utilizado por el *Propietario del bot*',
+        mods: '🛡️ Este comando solo puede ser utilizado por *Moderadores*',
+        premium: '💎 Este comando es solo para usuarios *Premium*',
+        group: '👥 Este comando solo puede ser usado en *Grupos*',
+        private: '🔒 Este comando solo puede ser usado en *Chat Privado*',
+        admin: '👮 Este comando es solo para *Admins del grupo*',
+        botAdmin: '🤖 El bot necesita ser *Admin* para usar este comando',
+        unreg: '📝 Regístrate para usar este comando con */reg nombre.edad*',
+        restrict: '⚠️ Esta función está deshabilitada'
+        }[type]
     if (msg) return m.reply(msg)
 }
 
