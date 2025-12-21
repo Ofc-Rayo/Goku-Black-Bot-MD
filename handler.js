@@ -112,42 +112,46 @@ export async function handler(chatUpdate) {
             console.error(e)
         }
 
-        // --------- BLOQUE ROBUSTO PARA ADMIN/OWNER/BOTADMIN DEFINITIVO ---------
+        // --------- OBTENCIÓN DE METADATA Y PARTICIPANTS ---------
         let groupMetadata = {}
         let participants = []
-        let participantSelf = {}
-        let isRA = false, isA = false, isBotAdmin = false
         if (m.isGroup) {
             try {
                 groupMetadata = await this.groupMetadata(m.chat)
                 participants = groupMetadata.participants || []
-                participantSelf = participants.find(u => u.id === m.sender) || {}
-                isRA = participantSelf.admin === 'superadmin'
-                isA = isRA || participantSelf.admin === 'admin'
-                let bot = participants.find(u => u.id === this.user.jid)
-                isBotAdmin = !!bot?.admin
             } catch (e) {
                 groupMetadata = {}
                 participants = []
-                isRA = false
-                isA = false
-                isBotAdmin = false
             }
         }
-        // -----------------------------------------------------------------------
+
+        // --------- NUEVO BLOQUE DE DETECCIÓN DE ROLES ---------
+        const sender = m.sender
+        const userGroup = (m.isGroup ? participants.find((u) => this.decodeJid(u.id) === sender) : {}) || {}
+        const botGroup = (m.isGroup ? participants.find((u) => this.decodeJid(u.id) == this.user.jid) : {}) || {}
+        const isRAdmin = userGroup?.admin == "superadmin" || false
+        const isAdmin = isRAdmin || userGroup?.admin == "admin" || false
+        const isBotAdmin = botGroup?.admin || false
+        const senderNum = sender.split('@')[0]
+        const isROwner = [...global.owner.map(([number]) => number), this.user.jid.split('@')[0]].includes(senderNum)
+        const isOwner = isROwner || m.fromMe
+        const isMods = isOwner || global.mods.map(v => v.replace(/[^0-9]/g, '')).includes(senderNum)
+        let _user = global.db.data && global.db.data.users && global.db.data.users[m.chat] && global.db.data.users[m.chat][m.sender]
+        const isPrems = isROwner || global.prems.map(v => v.replace(/[^0-9]/g, '')).includes(senderNum) || _user?.premium == true
+        // -------------------------------------------------------
 
         const chat = global.db.data.chats[m.chat] || {}
         const msgHasLink = /(https?:\/\/[^\s]+)/i.test(m.text || '')
         if (
             m.isGroup &&
             chat.onlyAdmin &&
-            !isA &&
+            !isAdmin &&
             !(chat.antiLink || chat.antiLinkAll)
         ) return
         if (
             m.isGroup &&
             chat.onlyAdmin &&
-            !isA &&
+            !isAdmin &&
             (chat.antiLink || chat.antiLinkAll) && 
             !msgHasLink
         ) return
@@ -166,18 +170,6 @@ export async function handler(chatUpdate) {
         if (opts['gconly'] && !m.chat.endsWith('g.us')) return
         if (opts['swonly'] && m.chat !== 'status@broadcast') return
         if (typeof m.text !== 'string') m.text = ''
-
-        // --------- DETECCIÓN MEJORADA DE OWNER/MODS/PREMS CON SOPORTE @lid ---------
-        const detectwhat = m.sender.includes('@lid') ? '@lid' : '@s.whatsapp.net'
-        const sendNum = m.sender.replace(/[^0-9]/g, '')
-        const isROwner = [conn.decodeJid(global.conn.user.id), ...global.owner.map(([number]) => number)]
-            .map(v => v.replace(/[^0-9]/g, '') + detectwhat)
-            .includes(m.sender)
-        const isOwner = isROwner || m.fromMe
-        const isMods = isROwner || global.mods.map(v => v.replace(/[^0-9]/g, '') + detectwhat).includes(m.sender)
-        let _user = global.db.data && global.db.data.users && global.db.data.users[m.chat] && global.db.data.users[m.chat][m.sender]
-        const isPrems = isROwner || global.prems.map(v => v.replace(/[^0-9]/g, '') + detectwhat).includes(m.sender) || (_user && _user.premium === true)
-        // ---------------------------------------------------------------------------
 
         if (opts['queque'] && m.text && !(isMods || isPrems)) {
             let queque = this.msgqueque, time = 1000 * 5
@@ -231,12 +223,12 @@ export async function handler(chatUpdate) {
                     conn: this,
                     participants,
                     groupMetadata,
-                    user: participantSelf,
-                    bot: participants.find(u => u.id === this.user.jid) || {},
+                    user: userGroup,
+                    bot: botGroup,
                     isROwner,
                     isOwner,
-                    isRA,
-                    isA,
+                    isRAdmin,
+                    isAdmin,
                     isBotAdmin,
                     isPrems,
                     chatUpdate,
@@ -278,7 +270,7 @@ export async function handler(chatUpdate) {
                 if (plugin.premium && !isPrems) { fail('premium', m, this); continue }
                 if (plugin.group && !m.isGroup) { fail('group', m, this); continue }
                 if (plugin.botAdmin && !isBotAdmin) { fail('botAdmin', m, this); continue }
-                if (plugin.admin && !isA) { fail('admin', m, this); continue }
+                if (plugin.admin && !isAdmin) { fail('admin', m, this); continue }
                 if (plugin.private && m.isGroup) { fail('private', m, this); continue }
                 if (plugin.register == true && _user && _user.registered == false) { fail('unreg', m, this); continue }
                 m.isCommand = true
@@ -305,12 +297,12 @@ export async function handler(chatUpdate) {
                     conn: this,
                     participants,
                     groupMetadata,
-                    user: participantSelf,
-                    bot: participants.find(u => u.id === this.user.jid) || {},
+                    user: userGroup,
+                    bot: botGroup,
                     isROwner,
                     isOwner,
-                    isRA,
-                    isA,
+                    isRAdmin,
+                    isAdmin,
                     isBotAdmin,
                     isPrems,
                     chatUpdate,
