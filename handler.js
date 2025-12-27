@@ -143,7 +143,7 @@ export async function handler(chatUpdate) {
         } catch (e) {
             console.error(e)
         }
-        
+
        const mainBot = global?.conn?.user?.jid
        const chat = global.db.data.chats[m.chat] || {}
        const isSubbs = chat.antiLag === true
@@ -193,7 +193,7 @@ export async function handler(chatUpdate) {
 
         const groupMetadata = (m.isGroup ? ((conn.chats[m.chat] || {}).metadata || await this.groupMetadata(m.chat).catch(_ => null)) : {}) || {}
         const participants = (m.isGroup ? groupMetadata.participants : []) || []
-        
+
         const normalizeJid = jid => jid?.replace(/[^0-9]/g, '')
         const cleanJid = jid => jid?.split(':')[0] || ''
         const senderNum = normalizeJid(m.sender)
@@ -418,6 +418,7 @@ export async function handler(chatUpdate) {
                 this.msgqueque.splice(quequeIndex, 1)
         }
         let user, stats = global.db.data.stats
+        if (!stats) global.db.data.stats = stats = {}
         if (m) {
             if (m.sender && (user = global.db.data.users[m.sender])) {
                 user.exp += m.exp
