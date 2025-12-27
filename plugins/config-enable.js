@@ -155,9 +155,9 @@ case 'noprefix':
     default:
       //if (!/[01]/.test(command)) return await conn.sendMessage(m.chat, listMessage, { quoted: m })
       if (!/[01]/.test(command)) return m.reply(`
-☁️ \`໋≡ Lista de Opciones :\`
+💥 \`໋≡ Lista de Opciones :\`
 
-  乂 *ＡＤＭＩＮ*
+  . *ADMIN*
 -------------------------
  • welcome
  • antilink
@@ -167,14 +167,14 @@ case 'noprefix':
  • onlyadmin
  • antilinkall
  
-  乂 *ＯＷＮＥＲ*
+  . *CREADOR*
 -------------------------
  • public
  • noprefix
  • solopv
  • sologp
 
-*📌 Ｅｊｅｍｐｌｏ :*
+*📢 Ｅｊｅｍｐｌｏ :*
 *${usedPrefix}on* ${xx}welcome${xx}
 *${usedPrefix}off* ${xx}welcome${xx}
 `)
@@ -182,7 +182,7 @@ case 'noprefix':
 }
 
 m.reply(`
-✅ *${type.toUpperCase()}* *${isEnable ? `Activado` : `Desactivado`}* ${isAll ? `para este bot` : isUser ? '' : `para este chat`}
+☑️ *${type.toUpperCase()}* *${isEnable ? `Activado` : `Desactivado`}* ${isAll ? `para este bot` : isUser ? '' : `para este chat`}
 `.trim()) 
 
 }
