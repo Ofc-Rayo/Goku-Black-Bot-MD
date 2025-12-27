@@ -12,7 +12,7 @@ const { CONNECTING } = ws
 import { makeWASocket } from '../lib/simple.js'
 import { fileURLToPath } from 'url'
 
-let rtx = `\n`*Vincula el subbot usando el código QR.*\n`.trim()
+let rtx = `\n`*Vincula el subbot usando el código QR.*`\n`.trim()
 let rtx2 = `> *Vincula el subbot usando el código de 8 dígitos.*`.trim()
 
 const __filename = fileURLToPath(import.meta.url)
