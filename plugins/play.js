@@ -9,7 +9,7 @@ async function resizeImage(buffer, size = 300) {
   return image.resize(size, size).getBufferAsync(Jimp.MIME_JPEG)
 }
 
-const name = 'Descargas - black clover'
+const name = 'Descargas - YouTube'
 
 const savetube = {
   api: {
@@ -116,22 +116,35 @@ const handler = async (m, { conn, text }) => {
   await m.react("⌛")
   if (!text) return m.reply("🎧 Escribe el nombre o link del video")
 
-  let url, title, thumb
+  let url, yt_play
   if (savetube.isUrl(text)) {
     const id = savetube.youtube(text)
     const r = await yts({ videoId: id })
+    yt_play = [{
+      title: r.title,
+      ago: r.ago,
+      duration: { seconds: r.seconds },
+      thumbnail: r.thumbnail,
+      url: text
+    }]
     url = text
-    title = r.title
-    thumb = r.thumbnail
   } else {
     const r = await yts.search(text)
     if (!r.videos.length) return m.reply("❌ No encontrado")
+    yt_play = [r.videos[0]]
     url = r.videos[0].url
-    title = r.videos[0].title
-    thumb = r.videos[0].thumbnail
   }
 
-  const img = await resizeImage(await (await fetch(thumb)).buffer())
+  const img = await resizeImage(
+    await (await fetch(yt_play[0].thumbnail)).buffer()
+  )
+
+  await m.reply(`📄 *Título* : ${yt_play[0].title}
+🗓️ *Publicado:* ${yt_play[0].ago}
+⌛ *Duración:* ${secondString(yt_play[0].duration.seconds)}
+
+_*Descargado el audio 📼, aguarden un momento....*_`)
+
   const dl = await savetube.download(url)
   if (!dl.status) return m.reply("❌ Error al descargar")
 
@@ -141,8 +154,7 @@ const handler = async (m, { conn, text }) => {
       audio: { url: dl.result.download },
       mimetype: "audio/mpeg",
       fileName: `${dl.result.title}.mp3`,
-      jpegThumbnail: img,
-      caption: `🎵 *${title}*`
+      jpegThumbnail: img
     },
     { quoted: m }
   )
