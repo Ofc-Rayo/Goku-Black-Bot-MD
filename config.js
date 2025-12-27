@@ -9,7 +9,7 @@ import moment from 'moment-timezone';
 
 global.owner = [
   ['595972157130', "ivan", true],
-  ["0000"],
+  ["+522431268546"],
 ] 
 
 global.mods = [] 
