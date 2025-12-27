@@ -1,5 +1,4 @@
 import sharp from "sharp";
-import fs from "fs";
 import moment from "moment-timezone";
 
 let handler = async (m, { conn }) => {
@@ -21,22 +20,20 @@ ${ucapan()} @${m.sender.split("@")[0]}!
   const mention = conn.parseMention(menutext);
 
   try {
-    let imageBuffer = await fs.promises.readFile('./src/doc_image.jpg');
-
-    let imager = await sharp(imageBuffer)
+    let imager = await sharp('./src/doc_image.jpg')
       .resize(400, 400)
       .toBuffer();
+
+    let imgUrl = './src/menu.jpg';
 
     await conn.sendMessage(
       m.chat,
       {
-        document: { 
-          buffer: imageBuffer,
-          mimetype: "image/jpeg",
-          fileName: "Goku-Black.jpg"
-        },
+        document: { url: imgUrl },
+        fileName: "Menu",
+        mimetype: "image/jpeg",
         caption: menutext,
-        fileLength: imageBuffer.length,
+        fileLength: 1900,
         jpegThumbnail: imager,
         contextInfo: {
           mentionedJid: mention,
@@ -45,7 +42,8 @@ ${ucapan()} @${m.sender.split("@")[0]}!
           externalAdReply: {
             title: "",
             body: `あ ${wm}`,
-            thumbnail: imager,
+            thumbnail: { url: imgUrl },
+            sourceUrl: "",
             mediaType: 1,
             renderLargerThumbnail: true,
           },
