@@ -210,9 +210,9 @@ export async function handler(chatUpdate) {
         const isBotAdmin = !!bot?.admin || bot?.admin === 'admin'
 
         const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins')
-        for (let name in (global.plugins || {})) {
+        for (let name in global.plugins) {
             let plugin = global.plugins[name]
-            if (!plugin || typeof plugin !== 'object')
+            if (!plugin)
                 continue
             if (plugin.disabled)
                 continue
@@ -476,14 +476,4 @@ global.dfail = (type, m, conn, usedPrefix) => {
         admin: " |𝐀𝐯𝐢𝐬𝐨|  _*`👑 𝐄𝐒𝐓𝐄 𝐂𝐎𝐌𝐀𝐍𝐃𝐎 𝐄𝐒 𝐒𝐎𝐋𝐎 𝐏𝐀𝐑𝐀 𝐀𝐃𝐌𝐈𝐍𝐒⚡`*_",
         botAdmin: " |𝐀𝐯𝐢𝐬𝐨|  _*`🤖 𝐍𝐄𝐂𝐄𝐒𝐈𝐓𝐎 𝐒𝐄𝐑 𝐀𝐃𝐌𝐈𝐍 𝐏𝐀𝐑𝐀 𝐄𝐒𝐓𝐄 𝐂𝐎𝐌𝐀𝐍𝐃𝐎⚡`*_",
         unreg: " |𝐀𝐯𝐢𝐬𝐨|  _*`📝 𝐃𝐄𝐁𝐄𝐒 𝐑𝐄𝐆𝐈𝐒𝐓𝐑𝐀𝐑𝐓𝐄 𝐏𝐀𝐑𝐀 𝐔𝐒𝐀𝐑 𝐄𝐒𝐓𝐄 𝐂𝐎𝐌𝐀𝐍𝐃𝐎⚡`*_",
-        restrict: " |𝐀𝐯𝐢𝐬𝐨|  _*`🔒 𝐄𝐒𝐓𝐀 𝐅𝐔𝐍𝐂𝐈𝐎́𝐍 𝐄𝐒𝐓𝐀́ 𝐃𝐄𝐒𝐀𝐁𝐈𝐋𝐈𝐓𝐀𝐃𝐀⚡`*_"
-    }[type]
-    if (msg) return m.reply(msg)
-}
-
-let file = global.__filename(import.meta.url, true)
-watchFile(file, async () => {
-    unwatchFile(file)
-    console.log(chalk.magenta("✅ Se actualizo 'handler.js'"))
-    if (global.reloadHandler) console.log(await global.reloadHandler())
-})
+        restrict: " |𝐀𝐯𝐢𝐬𝐨|  _*`🔒 𝐄𝐒𝐓𝐀 𝐅𝐔?
