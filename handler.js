@@ -466,16 +466,16 @@ export async function handler(chatUpdate) {
 
 global.dfail = (type, m, conn, usedPrefix) => {
     let msg = {
-        rowner: "「👑」 *Esta función solo puede ser usada por mi creador*" 
-owner: "「👑」 *Esta función solo puede ser usada por mi desarrollador.", 
-mods: "「🤴🏻」 *Esta función solo puede ser usada por mis desarrolladores.*", 
-premium: "「🍧」 *Esta función solo es para usuarios Premium.", 
-group: "「🐢」 *Esta funcion solo puede ser ejecutada en grupos.*", 
-private: "「🍭」 *Esta función solo puede ser usada en chat privado.*", 
-admin: "「👑」 *Este comando solo puede ser usado por admins.*", 
-botAdmin: "「🚩」 *Para usar esta función debo ser admin.*", 
-unreg: "No estas registrado, no te encuentro en mi base de datos",
-restrict: "「💫」 *Esta característica esta desactivada.*"
+    rowner: "「👑」 *Esta función solo puede ser usada por mi creador*",
+    owner: "「👑」 *Esta función solo puede ser usada por mi desarrollador.*",
+    mods: "「🤴🏻」 *Esta función solo puede ser usada por mis desarrolladores.*",
+    premium: "「🍧」 *Esta función solo es para usuarios Premium.*",
+    group: "「🐢」 *Esta funcion solo puede ser ejecutada en grupos.*",
+    private: "「🍭」 *Esta función solo puede ser usada en chat privado.*",
+    admin: "「👑」 *Este comando solo puede ser usado por admins.*",
+    botAdmin: "「🚩」 *Para usar esta función debo ser admin.*",
+    unreg: "No estas registrado, no te encuentro en mi base de datos",
+    restrict: "「💫」 *Esta característica esta desactivada.*"
     }[type]
     if (msg) return m.reply(msg)
 }
