@@ -68,15 +68,17 @@ global.sessions = 'sessions/session-bot'
 global.jadi = 'sessions/session-sub'
 global.dbname = "Data/database.json"
 
-global.d = new Date(new Date + 3600000)
+const d = moment.tz('America/Asuncion');
+
+global.d = d.toDate();
 global.locale = 'es'
-global.dia = d.toLocaleDateString(locale, { weekday: 'long' })
-global.fecha = d.toLocaleDateString('es', { day: 'numeric', month: 'numeric', year: 'numeric' })
-global.mes = d.toLocaleDateString('es', { month: 'long' })
-global.año = d.toLocaleDateString('es', { year: 'numeric' })
-global.tiempo = d.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true })
-global.botdate = `⫹⫺ Date :  ${moment.tz('America/Los_Angeles').format('DD/MM/YY')}`
-global.bottime = `𝗧 𝗜 𝗠 𝗘 : ${moment.tz('America/Los_Angeles').format('HH:mm:ss')}`
+global.dia = d.format('dddd')
+global.fecha = d.format('DD/MM/YYYY')
+global.mes = d.format('MMMM')
+global.año = d.format('YYYY')
+global.tiempo = d.format('HH:mm:ss')
+global.botdate = `⫹⫺ Date : ${d.format('DD/MM/YY')}`
+global.bottime = `𝗧 𝗜 𝗠 𝗘 : ${d.format('HH:mm:ss')}`
 
 global.multiplier = 250
 global.maxwarn = '2'
