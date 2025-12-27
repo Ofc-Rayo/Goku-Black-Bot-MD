@@ -30,7 +30,7 @@ ${ucapan()} @${m.sender.split("@")[0]}!
       m.chat,
       {
         document: { url: imgUrl },
-        fileName: "ѕуℓρнιєттє'ѕ",
+        fileName: "Black",
         mimetype: "image/png",
         caption: menutext,
         fileLength: 1900,
