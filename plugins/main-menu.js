@@ -20,7 +20,7 @@ ${ucapan()} @${m.sender.split("@")[0]}!
   const mention = conn.parseMention(menutext);
 
   try {
-    let imager = await sharp('./src/doc_image.png')
+    let imager = await sharp('./src/doc_image.jpg')
       .resize(400, 400)
       .toBuffer();
 
