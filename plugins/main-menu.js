@@ -24,7 +24,7 @@ ${ucapan()} @${m.sender.split("@")[0]}!
       .resize(400, 400)
       .toBuffer();
 
-    let imgUrl = "https://files.catbox.moe/uuglrm.jpg";
+    let imgUrl = ./src/menu.jpg";
 
     await conn.sendMessage(
       m.chat,
