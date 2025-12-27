@@ -1,14 +1,23 @@
 import sharp from "sharp";
-import fetch from "node-fetch";
+import moment from "moment-timezone";
 
 let handler = async (m, { conn }) => {
   m.react("🍂");
-  let name = await conn.getName(m.sender);
-  if (!global.menutext) await global.menu();
 
-  let cap = global.menutext;
-  let txt = `🍄 ${ucapan()}, @${m.sender.split("@")[0]} !\n\n${cap}`;
-  let mention = conn.parseMention(txt);
+  let name = await conn.getName(m.sender);
+
+  const menutext = `
+${ucapan()} @${m.sender.split("@")[0]}!
+
+\`COMANDOS\`
+• play
+• tiktok
+• fb
+
+> Comandos disponibles por el momento
+  `;
+
+  const mention = conn.parseMention(menutext);
 
   try {
     let imager = await sharp('./src/doc_image.jpg')
@@ -23,7 +32,7 @@ let handler = async (m, { conn }) => {
         document: { url: imgUrl },
         fileName: "ѕуℓρнιєттє'ѕ",
         mimetype: "image/png",
-        caption: txt,
+        caption: menutext,
         fileLength: 1900,
         jpegThumbnail: imager,
         contextInfo: {
@@ -43,12 +52,11 @@ let handler = async (m, { conn }) => {
       { quoted: m }
     );
   } catch (e) {
-    conn.reply(m.chat, txt, m, { mentions: mention });
-    conn.reply(m.chat, "❎ Error al mostrar el menú principal : " + e, m);
+    await conn.reply(m.chat, menutext, m, { mentions: mention });
+    await conn.reply(m.chat, "❎ Error al mostrar el menú principal: " + e, m);
   }
-
-  await global.menu();
 };
+
 handler.command = ["menu", "help", "menú", "commands", "comandos", "?"];
 export default handler;
 
