@@ -139,9 +139,8 @@ const handler = async (m, { conn, text }) => {
     await (await fetch(yt_play[0].thumbnail)).buffer()
   )
 
-  await m.reply(`📄 *Título* : ${yt_play[0].title}
-🗓️ *Publicado:* ${yt_play[0].ago}
-⌛ *Duración:* ${secondString(yt_play[0].duration.seconds)}
+  await m.reply(`📄 *Título* : ${title}
+⌛ *Duración:* ${duración}
 
 _*Descargado el audio 📼, aguarden un momento....*_`)
 
