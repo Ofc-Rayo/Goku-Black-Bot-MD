@@ -210,9 +210,9 @@ export async function handler(chatUpdate) {
         const isBotAdmin = !!bot?.admin || bot?.admin === 'admin'
 
         const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins')
-        for (let name in global.plugins) {
+        for (let name in (global.plugins || {})) {
             let plugin = global.plugins[name]
-            if (!plugin)
+            if (!plugin || typeof plugin !== 'object')
                 continue
             if (plugin.disabled)
                 continue
