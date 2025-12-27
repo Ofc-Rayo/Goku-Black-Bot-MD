@@ -9,8 +9,6 @@ async function resizeImage(buffer, size = 300) {
   return image.resize(size, size).getBufferAsync(Jimp.MIME_JPEG)
 }
 
-const name = 'Descargas - YouTube'
-
 const savetube = {
   api: {
     base: "https://media.savetube.me/api",
@@ -26,10 +24,7 @@ const savetube = {
     "user-agent": "Postify/1.0.0"
   },
   crypto: {
-    hexToBuffer: (hexString) => {
-      const matches = hexString.match(/.{1,2}/g)
-      return Buffer.from(matches.join(""), "hex")
-    },
+    hexToBuffer: (hex) => Buffer.from(hex.match(/.{1,2}/g).join(""), "hex"),
     decrypt: async (enc) => {
       const secretKey = "C5D58EF67A7584E4A29F6C35BBC4EB12"
       const data = Buffer.from(enc, "base64")
@@ -51,13 +46,12 @@ const savetube = {
     }
   },
   youtube: (url) => {
-    const patterns = [
+    const p = [
       /youtube.com\/watch\?v=([a-zA-Z0-9_-]{11})/,
-      /youtube.com\/embed\/([a-zA-Z0-9_-]{11})/,
       /youtu.be\/([a-zA-Z0-9_-]{11})/
     ]
-    for (let p of patterns) {
-      const m = url.match(p)
+    for (const r of p) {
+      const m = url.match(r)
       if (m) return m[1]
     }
     return null
@@ -82,25 +76,18 @@ const savetube = {
     return { status: true, data: r.data.cdn }
   },
   download: async (link) => {
-    if (!savetube.isUrl(link)) return { status: false, error: "URL inválida" }
+    if (!savetube.isUrl(link)) return { status: false }
     const id = savetube.youtube(link)
-    if (!id) return { status: false, error: "ID inválido" }
-
-    const cdnx = await savetube.getCDN()
-    if (!cdnx.status) return cdnx
-
+    const cdn = await savetube.getCDN()
     const info = await savetube.request(
-      `https://${cdnx.data}${savetube.api.info}`,
+      `https://${cdn.data}${savetube.api.info}`,
       { url: `https://www.youtube.com/watch?v=${id}` }
     )
-    if (!info.status) return info
-
     const dec = await savetube.crypto.decrypt(info.data.data)
     const dl = await savetube.request(
-      `https://${cdnx.data}${savetube.api.download}`,
+      `https://${cdn.data}${savetube.api.download}`,
       { id, downloadType: "audio", quality: "mp3", key: dec.key }
     )
-
     return {
       status: true,
       result: {
@@ -114,55 +101,71 @@ const savetube = {
 
 const handler = async (m, { conn, text }) => {
   await m.react("⌛")
-  if (!text) return m.reply("🎧 Escribe el nombre o link del video")
+  if (!text) return
 
-  let url, yt_play
+  let yt
   if (savetube.isUrl(text)) {
     const id = savetube.youtube(text)
     const r = await yts({ videoId: id })
-    yt_play = [{
+    yt = {
       title: r.title,
-      ago: r.ago,
-      duration: { seconds: r.seconds },
+      duration: secondString(r.seconds),
       thumbnail: r.thumbnail,
+      author: r.author?.name || "YouTube",
       url: text
-    }]
-    url = text
+    }
   } else {
     const r = await yts.search(text)
-    if (!r.videos.length) return m.reply("❌ No encontrado")
-    yt_play = [r.videos[0]]
-    url = r.videos[0].url
+    if (!r.videos.length) return
+    const v = r.videos[0]
+    yt = {
+      title: v.title,
+      duration: secondString(v.duration.seconds),
+      thumbnail: v.thumbnail,
+      author: v.author.name,
+      url: v.url
+    }
   }
 
   const img = await resizeImage(
-    await (await fetch(yt_play[0].thumbnail)).buffer()
+    await (await fetch(yt.thumbnail)).buffer()
   )
 
-  await m.reply(`📄 *Título* : ${title}
-⌛ *Duración:* ${duración}
+  const dl = await savetube.download(yt.url)
+  if (!dl.status) return
 
-_*Descargado el audio 📼, aguarden un momento....*_`)
+  const title = yt.title
+  const artist = yt.author
+  const duration = yt.duration
+  const videoUrl = yt.url
+  const cover = yt.thumbnail
 
-  const dl = await savetube.download(url)
-  if (!dl.status) return m.reply("❌ Error al descargar")
+  const caption = `
+🎶 *${title}*
+📺 *Canal:* ${artist}
+⏱️ *Duración:* ${duration}
+🔗 *YouTube:* ${videoUrl}
 
-  await conn.sendMessage(
-    m.chat,
-    {
-      audio: { url: dl.result.download },
-      mimetype: "audio/mpeg",
-      fileName: `${dl.result.title}.mp3`,
-      jpegThumbnail: img
-    },
-    { quoted: m }
-  )
+✅ Audio listo. ¡Disfrútalo! 🔊
+`.trim()
+
+  await conn.sendMessage(m.chat, {
+    image: { url: cover },
+    caption
+  }, { quoted: m })
+
+  await conn.sendMessage(m.chat, {
+    audio: { url: dl.result.download },
+    mimetype: "audio/mpeg",
+    fileName: `${dl.result.title}.mp3`,
+    jpegThumbnail: img
+  }, { quoted: m })
 
   await m.react("✅")
 }
 
 handler.command = ["play"]
-handler.help = ["play"]
 handler.tags = ["descargas"]
+handler.help = ["play"]
 
 export default handler
