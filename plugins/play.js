@@ -148,12 +148,12 @@ const handler = async (m, { conn, text }) => {
   if (!dl.status) return
 
   const caption = `
-🎶 *${yt.title}*
-📺 *Canal:* ${yt.author}
-⏱️ *Duración:* ${yt.duration}
-🔗 *YouTube:* ${yt.url}
+𖥔 *${yt.title}*
+𖥔 *Canal:* ${yt.author}
+𖥔 *Duración:* ${yt.duration}
+𖥔 *YouTube:* ${yt.url}
 
-✅ Audio listo. ¡Disfrútalo! 🔊
+> Descargando audio aguarde unos segundos..
 `.trim()
 
   await conn.sendMessage(m.chat, {
