@@ -157,22 +157,22 @@ case 'noprefix':
       if (!/[01]/.test(command)) return m.reply(`
 💥 \`໋≡ Lista de Opciones :\`
 
-  . *ADMIN*
+  ✧ *ADMIN*
 -------------------------
- • welcome
- • antilink
- • detect 
- • antilag
- • document
- • onlyadmin
- • antilinkall
+ ⋆ welcome
+ ⋆ antilink
+ ⋆ detect 
+ ⋆ antilag
+ ⋆ document
+ ⋆ onlyadmin
+ ⋆ antilinkall
  
-  . *CREADOR*
+  ✧ *CREADOR*
 -------------------------
- • public
- • noprefix
- • solopv
- • sologp
+ ⋆ public
+ ⋆ noprefix
+ ⋆ solopv
+ ⋆ sologp
 
 *📢 Ｅｊｅｍｐｌｏ :*
 *${usedPrefix}on* ${xx}welcome${xx}
