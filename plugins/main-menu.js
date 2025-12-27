@@ -30,7 +30,7 @@ ${ucapan()} @${m.sender.split("@")[0]}!
       m.chat,
       {
         document: { url: imgUrl },
-        fileName: "Menu",
+        fileName: "Goku-Black",
         mimetype: "image/jpeg",
         caption: menutext,
         fileLength: 1900,
