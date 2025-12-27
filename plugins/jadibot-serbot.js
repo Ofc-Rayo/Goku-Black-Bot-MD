@@ -5,7 +5,7 @@ import fs from "fs"
 import path from "path"
 import pino from 'pino'
 import chalk from 'chalk'
-import util from 'util' 
+import util from 'util'
 import * as ws from 'ws'
 const { child, spawn, exec } = await import('child_process')
 const { CONNECTING } = ws
@@ -22,22 +22,19 @@ const MAX_SUBBOTS = 10
 if (global.conns instanceof Array) console.log()
 else global.conns = []
 
-async function loadSubbots() {
+async function loadGokuBlackSubbots() {
   if (!fs.existsSync(`./${global.jadi}`)) return
   const folders = fs.readdirSync(`./${global.jadi}`)
   for (const folder of folders) {
-    const pathSkyJadiBot = path.join(`./${global.jadi}/`, folder)
-    if (fs.statSync(pathSkyJadiBot).isDirectory() && fs.existsSync(path.join(pathSkyJadiBot, 'creds.json'))) {
-      skyJadiBot({ pathSkyJadiBot, fromCommand: false })
+    const pathGokuBlackJadiBot = path.join(`./${global.jadi}/`, folder)
+    if (fs.statSync(pathGokuBlackJadiBot).isDirectory() && fs.existsSync(path.join(pathGokuBlackJadiBot, 'creds.json'))) {
+      GokuBlackJadiBot({ pathGokuBlackJadiBot, fromCommand: false })
     }
   }
 }
-loadSubbots().catch(console.error)
+loadGokuBlackSubbots().catch(console.error)
 
 let handler = async (m, { conn, args, usedPrefix, command, isOwner }) => {
-  if (!global.db.data.settings[conn.user.jid].jadibotmd) {
-    return m.reply(`*Este comando esta deshabilitado por mi creador.*`)
-  }
 
   const activeConns = global.conns.filter(c => c.user && c.ws.socket && c.ws.socket.readyState !== ws.CLOSED)
   if (activeConns.length >= MAX_SUBBOTS) {
@@ -46,32 +43,32 @@ let handler = async (m, { conn, args, usedPrefix, command, isOwner }) => {
 
   let who = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.fromMe ? conn.user.jid : m.sender
   let id = `${who.split`@`[0]}`
-  let pathSkyJadiBot = path.join(`./${jadi}/`, id)
+  let pathGokuBlackJadiBot = path.join(`./${jadi}/`, id)
 
-  skyJadiBot({ pathSkyJadiBot, m, conn, args, usedPrefix, command, fromCommand: true })
-} 
+  GokuBlackJadiBot({ pathGokuBlackJadiBot, m, conn, args, usedPrefix, command, fromCommand: true })
+}
 
 handler.help = ['qr', 'code']
 handler.tags = ['serbot']
 handler.command = ['qr', 'code']
-export default handler 
+export default handler
 
-export async function skyJadiBot(options) {
-  let { pathSkyJadiBot, m, conn, args, usedPrefix, command, fromCommand } = options
+export async function GokuBlackJadiBot(options) {
+  let { pathGokuBlackJadiBot, m, conn, args, usedPrefix, command, fromCommand } = options
   let isInit = true
   let isSent = false
 
-  if (!fs.existsSync(pathSkyJadiBot)) fs.mkdirSync(pathSkyJadiBot, { recursive: true })
+  if (!fs.existsSync(pathGokuBlackJadiBot)) fs.mkdirSync(pathGokuBlackJadiBot, { recursive: true })
 
   const mcode = fromCommand && (command === 'code' || args?.includes('code'))
-  const { state, saveCreds } = await useMultiFileAuthState(pathSkyJadiBot)
+  const { state, saveCreds } = await useMultiFileAuthState(pathGokuBlackJadiBot)
   const { version } = await fetchLatestBaileysVersion()
 
   const connectionOptions = {
     logger: pino({ level: "silent" }),
     printQRInTerminal: false,
     auth: { creds: state.creds, keys: makeCacheableSignalKeyStore(state.keys, pino({level: 'silent'})) },
-    browser: mcode ? ['Ubuntu', 'Chrome', '110.0.5585.95'] : ['Sky Bot','Chrome','2.0.0'],
+    browser: mcode ? ['Ubuntu', 'Chrome', '110.0.5585.95'] : ['GokuBlack Bot','Chrome','2.0.0'],
     version,
     msgRetryCounterCache: new NodeCache()
   }
@@ -99,7 +96,7 @@ export async function skyJadiBot(options) {
       sock.isInit = true
       isSent = true
       if (!global.conns.includes(sock)) global.conns.push(sock)
-      console.log(chalk.cyanBright(`\n❒⸺⸺⸺⸺【• SKY-BOT •】⸺⸺⸺⸺❒\n│ 🟢 Conectado: ${sock.user.id}\n❒⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺❒`))
+      console.log(chalk.cyanBright(`\n❒⸺⸺⸺⸺【• GokuBlack-BOT •】⸺⸺⸺⸺❒\n│ 🟢 Conectado: ${sock.user.id}\n❒⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺❒`))
       if (fromCommand) {
         await conn.reply(m.chat, `*¡Conexión exitosa!*`, m)
         options.fromCommand = false
@@ -109,15 +106,15 @@ export async function skyJadiBot(options) {
     if (connection === 'close') {
       isSent = false
       if (statusCode !== DisconnectReason.loggedOut) {
-        console.log(chalk.yellow(`\n⚠️ Reconectando subbot: ${path.basename(pathSkyJadiBot)}`))
+        console.log(chalk.yellow(`\n⚠️ Reconectando subbot: ${path.basename(pathGokuBlackJadiBot)}`))
         setTimeout(() => {
-          skyJadiBot({ ...options, fromCommand: false })
+          GokuBlackJadiBot({ ...options, fromCommand: false })
         }, 5000)
       } else {
-        console.log(chalk.red(`\n❌ Sesión cerrada: ${path.basename(pathSkyJadiBot)}`))
+        console.log(chalk.red(`\n❌ Sesión cerrada: ${path.basename(pathGokuBlackJadiBot)}`))
         try {
-          if (fs.existsSync(pathSkyJadiBot)) {
-            fs.rmSync(pathSkyJadiBot, { recursive: true, force: true })
+          if (fs.existsSync(pathGokuBlackJadiBot)) {
+            fs.rmSync(pathGokuBlackJadiBot, { recursive: true, force: true })
           }
         } catch (e) {
           console.error(e)
