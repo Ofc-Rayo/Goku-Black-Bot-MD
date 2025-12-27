@@ -466,14 +466,23 @@ export async function handler(chatUpdate) {
 
 global.dfail = (type, m, conn, usedPrefix) => {
     let msg = {
-        rowner: " |𝐀𝐯𝐢𝐬𝐨| `𝐋𝐨 𝐬𝐢𝐞𝐧𝐭𝐨 𝐞𝐬𝐭𝐞 𝐜𝐨𝐦𝐚𝐧𝐝𝐨 𝐬𝐨𝐥𝐨 𝐞𝐬 𝐩𝐚𝐫𝐚 𝐦𝐢 𝐜𝐫𝐞𝐚𝐝𝐨𝐫`🚫",
-        owner: " _ |𝐀𝐯𝐢𝐬𝐨| *`😴 𝙋𝙚𝙧𝙙𝙤𝙣 𝙨𝙤𝙡𝙤 𝙢𝙞𝙨 𝙘𝙧𝙚𝙖𝙙𝙤𝙧𝙚𝙨 𝙥𝙪𝙚𝙙𝙚𝙣 𝙪𝙨𝙖𝙧𝙡𝙤😴.`*_",
-        mods: " _*|𝐀𝐯𝐢𝐬𝐨| `⚡ 𝐄𝐡 𝐥𝐨 𝐬𝐢𝐞𝐧𝐭𝐨 𝐞𝐬𝐭𝐨 𝐬𝐨𝐥𝐨 𝐞𝐬 𝐩𝐚𝐫𝐚 𝐥𝐨𝐬 𝐦𝐨𝐝𝐬⚡`*_",
-        premium: " |𝐀𝐯𝐢𝐬𝐨| *`🔑 𝐍𝐎 𝐄𝐑𝐄𝐒 𝐔𝐒𝐔𝐀𝐑𝐈𝐎 𝐏𝐑𝐄𝐌𝐈𝐔𝐌 𝐇𝐀𝐁𝐋𝐀 𝐂𝐎𝐍 𝐌𝐈 𝐂𝐑𝐄𝐀𝐃𝐎𝐑⚡`*_",
-        premsubs: '《★》Esta función solo puede ser usada por subbots premiums.', 
-        group: " |𝐀𝐯𝐢𝐬𝐨|  _*`↘️ 𝐄𝐒𝐓𝐄 𝐂𝐎𝐌𝐀𝐍𝐃𝐎́ 𝐒𝐎𝐋𝐎 𝐅𝐔𝐍𝐂𝐈𝐎𝐍𝐀 𝐄𝐍 𝐆𝐑𝐔𝐏𝐎𝐒⚡`*_",
-        private: " |𝐀𝐯𝐢𝐬𝐨|  _*`💬 𝐔𝐒𝐀 𝐄𝐋 𝐂𝐇𝐀𝐓 𝐏𝐑𝐈𝐕𝐀𝐃𝐎 𝐏𝐀𝐑𝐀 𝐄𝐒𝐓𝐄 𝐂𝐎𝐌𝐀𝐍𝐃𝐎⚡`*_",
-        admin: " |𝐀𝐯𝐢𝐬𝐨|  _*`👑 𝐄𝐒𝐓𝐄 𝐂𝐎𝐌𝐀𝐍𝐃𝐎 𝐄𝐒 𝐒𝐎𝐋𝐎 𝐏𝐀𝐑𝐀 𝐀𝐃𝐌𝐈𝐍𝐒⚡`*_",
-        botAdmin: " |𝐀𝐯𝐢𝐬𝐨|  _*`🤖 𝐍𝐄𝐂𝐄𝐒𝐈𝐓𝐎 𝐒𝐄𝐑 𝐀𝐃𝐌𝐈𝐍 𝐏𝐀𝐑𝐀 𝐄𝐒𝐓𝐄 𝐂𝐎𝐌𝐀𝐍𝐃𝐎⚡`*_",
-        unreg: " |𝐀𝐯𝐢𝐬𝐨|  _*`📝 𝐃𝐄𝐁𝐄𝐒 𝐑𝐄𝐆𝐈𝐒𝐓𝐑𝐀𝐑𝐓𝐄 𝐏𝐀𝐑𝐀 𝐔𝐒𝐀𝐑 𝐄𝐒𝐓𝐄 𝐂𝐎𝐌𝐀𝐍𝐃𝐎⚡`*_",
-        restrict: " |𝐀𝐯𝐢𝐬𝐨|  _*`🔒 𝐄𝐒𝐓𝐀 𝐅𝐔?
+        rowner: "「👑」 *Esta función solo puede ser usada por mi creador*" 
+owner: "「👑」 *Esta función solo puede ser usada por mi desarrollador.", 
+mods: "「🤴🏻」 *Esta función solo puede ser usada por mis desarrolladores.*", 
+premium: "「🍧」 *Esta función solo es para usuarios Premium.", 
+group: "「🐢」 *Esta funcion solo puede ser ejecutada en grupos.*", 
+private: "「🍭」 *Esta función solo puede ser usada en chat privado.*", 
+admin: "「👑」 *Este comando solo puede ser usado por admins.*", 
+botAdmin: "「🚩」 *Para usar esta función debo ser admin.*", 
+unreg: "No estas registrado, no te encuentro en mi base de datos",
+restrict: "「💫」 *Esta característica esta desactivada.*"
+    }[type]
+    if (msg) return m.reply(msg)
+}
+
+let file = global.__filename(import.meta.url, true)
+watchFile(file, async () => {
+    unwatchFile(file)
+    console.log(chalk.magenta("✅ Se actualizo 'handler.js'"))
+    if (global.reloadHandler) console.log(await global.reloadHandler())
+})
