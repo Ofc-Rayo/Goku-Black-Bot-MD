@@ -4,6 +4,18 @@ import Jimp from "jimp"
 import axios from "axios"
 import crypto from "crypto"
 
+function secondString(seconds) {
+  seconds = Number(seconds) || 0
+  const h = Math.floor(seconds / 3600)
+  const m = Math.floor((seconds % 3600) / 60)
+  const s = Math.floor(seconds % 60)
+  return [
+    h > 0 ? h.toString().padStart(2, "0") : null,
+    m.toString().padStart(2, "0"),
+    s.toString().padStart(2, "0")
+  ].filter(Boolean).join(":")
+}
+
 async function resizeImage(buffer, size = 300) {
   const image = await Jimp.read(buffer)
   return image.resize(size, size).getBufferAsync(Jimp.MIME_JPEG)
@@ -104,6 +116,7 @@ const handler = async (m, { conn, text }) => {
   if (!text) return
 
   let yt
+
   if (savetube.isUrl(text)) {
     const id = savetube.youtube(text)
     const r = await yts({ videoId: id })
@@ -134,23 +147,17 @@ const handler = async (m, { conn, text }) => {
   const dl = await savetube.download(yt.url)
   if (!dl.status) return
 
-  const title = yt.title
-  const artist = yt.author
-  const duration = yt.duration
-  const videoUrl = yt.url
-  const cover = yt.thumbnail
-
   const caption = `
-🎶 *${title}*
-📺 *Canal:* ${artist}
-⏱️ *Duración:* ${duration}
-🔗 *YouTube:* ${videoUrl}
+🎶 *${yt.title}*
+📺 *Canal:* ${yt.author}
+⏱️ *Duración:* ${yt.duration}
+🔗 *YouTube:* ${yt.url}
 
 ✅ Audio listo. ¡Disfrútalo! 🔊
 `.trim()
 
   await conn.sendMessage(m.chat, {
-    image: { url: cover },
+    image: { url: yt.thumbnail },
     caption
   }, { quoted: m })
 
