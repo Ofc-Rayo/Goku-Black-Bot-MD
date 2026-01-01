@@ -16,7 +16,7 @@ if (!(global.conns instanceof Array)) global.conns = [];
 global.sessions = 'sessions/session-bot';
 global.jadi = 'sessions/session-sub';
 
-const MAX_SUBBOTS = 9999; // Cambia si quieres menos
+const MAX_SUBBOTS = 9999;
 
 async function loadSubbots() {
   if (!fs.existsSync('./' + global.jadi)) return;
@@ -33,7 +33,7 @@ async function loadSubbots() {
         printQRInTerminal: false,
         logger: pino({ level: "fatal" }),
         auth: state,
-        browser: [`GokuBlackBot`, "Linux", "1.0.0"],
+        browser: ["GokuBlackBot", "Linux", "1.0.0"],
       };
       let conn = makeWASocket(options);
       conn.isInit = false;
@@ -81,38 +81,88 @@ let handler = async (msg, { conn, args, usedPrefix, command }) => {
   }
   
   let { version } = await fetchLatestBaileysVersion();
-  const msgRetryCache = new NodeCache();
   const { state, saveCreds } = await useMultiFileAuthState(subbotPath);
-  const config = {
-    printQRInTerminal: false,
+
+  const fromCommand = true; // puedes ajustar si usas esta función recursiva
+  const mcode =
+    fromCommand &&
+    (command === "code" ||
+      (args &&
+        (args.includes("code") ||
+          args.includes("--code") ||
+          args.includes("-code"))));
+
+  let rtx = `> *Vincula el subbot usando el código QR.*`;
+  let rtx2 = `> *Vincula el subbot usando el código de 8 dígitos.*`;
+
+  const connectionOptions = {
     logger: pino({ level: "silent" }),
+    printQRInTerminal: false,
     auth: {
       creds: state.creds,
-      keys: makeCacheableSignalKeyStore(state.keys, pino({ level: "silent" }))
+      keys: makeCacheableSignalKeyStore(state.keys, pino({ level: "silent" })),
     },
-    browser: ["GokuBlackBot-MD", "Chrome", "2.0.0"],
-    msgRetryCache,
-    version
+    browser: mcode
+      ? ["Ubuntu", "Chrome", "110.0.5585.95"]
+      : ["GokuBlack Bot", "Chrome", "2.0.0"],
+    version,
+    msgRetryCounterCache: new NodeCache(),
+    markOnlineOnConnect: true,
+    syncFullHistory: false,
+    generateHighQualityLinkPreview: true,
+    defaultQueryTimeoutMs: undefined,
+    getMessage: async (key) => undefined,
   };
-  let subBot = makeWASocket(config);
+
+  let subBot = makeWASocket(connectionOptions);
   subBot.isInit = false;
 
   async function handleConnectionUpdate(update) {
     const { connection, lastDisconnect, isNewLogin, qr } = update;
-    const statusCode = lastDisconnect?.error?.output?.statusCode || lastDisconnect?.error?.output?.payload?.statusCode;
+    const statusCode =
+      lastDisconnect?.error?.output?.statusCode ||
+      lastDisconnect?.error?.output?.payload?.statusCode;
     if (isNewLogin) subBot.isInit = false;
-    if (qr) {
-      await conn.sendMessage(msg.chat, {
-        image: await qrcode.toBuffer(qr, { scale: 8 }),
-        caption: "*¡Escanea este QR para vincular tu subbot!*",
-      }, { quoted: msg });
+    // QR Normal
+    if (qr && !mcode) {
+      await conn.sendMessage(
+        msg.chat,
+        {
+          image: await qrcode.toBuffer(qr, { scale: 8 }),
+          caption: rtx,
+        },
+        { quoted: msg }
+      );
+    }
+    // Código 8 dígitos
+    if (qr && mcode) {
+      await conn.sendMessage(
+        msg.chat,
+        {
+          text: rtx2,
+        },
+        { quoted: msg }
+      );
+      setTimeout(async () => {
+        let pairingCode = await subBot.requestPairingCode(msg.sender.split`@`[0]);
+        await conn.sendMessage(
+          msg.chat,
+          {
+            text: `\`\`\`${pairingCode}\`\`\``,
+          },
+          { quoted: msg }
+        );
+      }, 3000);
     }
     if (connection === "open") {
       subBot.isInit = true;
       global.conns.push(subBot);
       await conn.sendMessage(msg.chat, { text: "✅ ¡SubBot conectado con éxito!" }, { quoted: msg });
     }
-    if ((connection === 'close' || connection === 'error') && statusCode === DisconnectReason.loggedOut) {
+    if (
+      (connection === "close" || connection === "error") &&
+      statusCode === DisconnectReason.loggedOut
+    ) {
       fs.rmSync(subbotPath, { recursive: true, force: true });
     }
   }
@@ -126,7 +176,9 @@ let handler = async (msg, { conn, args, usedPrefix, command }) => {
 
   setInterval(async () => {
     if (!subBot.user) {
-      try { subBot.ws.close(); } catch {}
+      try {
+        subBot.ws.close();
+      } catch {}
       subBot.ev.removeAllListeners();
       let index = global.conns.indexOf(subBot);
       if (index >= 0) global.conns.splice(index, 1);
@@ -139,5 +191,5 @@ handler.command = ["jadibot", "serbot", "code"];
 export default handler;
 
 function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
