@@ -16,12 +16,12 @@ let handler = async (m, { conn }) => {
   if (new Date() - user.weekly < cooldown)
     throw `⏱️ ${mssg.weeklyCd}\n*${msToTime((user.weekly + cooldown) - new Date())}*`
 
-  user.coin += we
+  user+limit += we
 
   m.reply(
 `🎁 ${mssg.weekly}
 
-🪙 *${mssg.money}* : +${we.toLocaleString()}`
+ 💠 *${mssg.limit}* : +${we.toLocaleString()}`
   )
 
   user.weekly = new Date() * 1
