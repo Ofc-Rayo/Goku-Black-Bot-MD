@@ -8,7 +8,6 @@ const { generateWAMessageFromContent, prepareWAMessageMedia, proto } = pkg
 var handler = m => m
 handler.all = async function (m) {
     try {
-        // Función getBuffer global optimizada
         global.getBuffer = async function getBuffer(url, options) {
             try {
                 options = options || {}
@@ -25,12 +24,10 @@ handler.all = async function (m) {
                 })
                 return res.data
             } catch (e) {
-                console.log(`Error en getBuffer: ${e}`)
                 return null
             }
         }
 
-        // Información básica del bot
         global.creador = 'Wa.me/59597215130'
         global.ofcbot = `${conn.user.jid.split('@')[0]}`
         global.namechannel = 'g᥆kᥙ-ᑲᥣᥲᥴk-ᑲ᥆𝗍-mძ - ᥙ⍴ძᥲ𝗍ᥱs 💫'
@@ -39,15 +36,12 @@ handler.all = async function (m) {
         global.namecomu = 'ᰔᩚ g᥆kᥙ-ᑲᥣᥲᥴk-ᑲ᥆𝗍-mძ • ᥴ᥆mᥙᥒі𝗍ᥡ ❀'
         global.listo = '❀ *Aquí tienes ฅ^•ﻌ•^ฅ*'
 
-        // Foto de perfil con fallback
         global.fotoperfil = await conn.profilePictureUrl(m.sender, 'image').catch(_ => 'https://sylphy.xyz/download/XYmJwC.jpeg')
 
-        // Canales
         global.canalIdM = ["120363276986902836@newsletter", "120363276986902836@newsletter"]
         global.canalNombreM = ["g᥆kᥙ-ᑲᥣᥲᥴk-ᑲ᥆𝗍-mძ - ᥙ⍴ძᥲ𝗍ᥱs 💫", "g᥆kᥙ-ᑲᥣᥲᥴk-ᑲ᥆𝗍-mძ - ᥴһᥲᥒᥒᥱᥣ 💥"]
         global.channelRD = await getRandomChannel()
 
-        // Fecha y hora
         global.d = new Date(new Date().getTime() + 3600000)
         global.locale = 'es'
         global.dia = d.toLocaleDateString(locale, {weekday: 'long'})
@@ -56,13 +50,11 @@ handler.all = async function (m) {
         global.año = d.toLocaleDateString('es', {year: 'numeric'})
         global.tiempo = d.toLocaleString('en-US', {hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true})
 
-        // Emojis de estado
         global.rwait = '🕒'
         global.done = '✅'
         global.error = '✖️'
         global.msm = '⚠︎'
 
-        // Emojis decorativos
         global.emoji = '❀'
         global.emoji2 = '✧'
         global.emoji3 = '✦'
@@ -70,13 +62,11 @@ handler.all = async function (m) {
         global.emoji5 = '✰'
         global.emojis = [emoji, emoji2, emoji3, emoji4].getRandom()
 
-        // Mensajes de espera
         global.wait = '❍ Espera un momento, soy lento...'
         global.waitt = '❍ Espera un momento, soy lento...'
         global.waittt = '❍ Espera un momento, soy lento...'
         global.waitttt = '❍ Espera un momento, soy lento...'
 
-        // Redes sociales
         const canal = ''  
         const comunidad = ''
         const git = 'https://github.com/Dev-Rayo'
@@ -84,11 +74,10 @@ handler.all = async function (m) {
         const correo = ''
         global.redes = [canal, comunidad, git, github, correo].getRandom()
 
-        // Cargar imagen aleatoria desde DB
         const category = "imagen"
         const db = './goku/datos/db.json'
         let rimg = null
-        
+
         try {
             if (fs.existsSync(db)) {
                 const db_ = JSON.parse(fs.readFileSync(db))
@@ -99,15 +88,13 @@ handler.all = async function (m) {
                     rimg = await response.buffer()
                 }
             }
-        } catch (e) {
-            console.log(`Error cargando imagen desde DB: ${e}`)
-        }
-        
+        } catch (e) {}
+
         global.icons = rimg || 'https://sylphy.xyz/download/XYmJwC.jpeg'
 
         const ase = new Date()
         const hour = ase.getHours()
-        
+
         if (hour >= 0 && hour < 3) {
             global.saludo = 'Lɪɴᴅᴀ Nᴏᴄʜᴇ 🌃'
         } else if (hour >= 3 && hour < 10) {
@@ -120,7 +107,6 @@ handler.all = async function (m) {
             global.saludo = 'Lɪɴᴅᴀ Nᴏᴄʜᴇ 🌃'
         }
 
-        // Información del usuario
         global.nombre = m.pushName || 'Anónimo'
         global.taguser = '@' + m.sender.split("@")[0]
         const more = String.fromCharCode(8206)
@@ -152,13 +138,9 @@ handler.all = async function (m) {
                 }
             }
         }
-
-        // Iconos no modififed
         global.icono = [
             'https://sylphy.xyz/download/XYmJwC.jpeg',
         ].getRandom()
-
-        // ¿fakke?
         global.rcanal = { 
             contextInfo: { 
                 isForwarded: true, 
@@ -181,10 +163,7 @@ handler.all = async function (m) {
                 }
             }
         }
-
-    } catch (e) {
-        console.error('Error en handler.all:', e)
-    }
+    } catch (e) {}
 }
 
 export default handler
@@ -200,7 +179,6 @@ async function getRandomChannel() {
         const name = global.canalNombreM[randomIndex]
         return { id, name }
     } catch (e) {
-        console.log('Error en getRandomChannel:', e)
         return { 
             id: "120363276986902836@newsletter", 
             name: "g᥆kᥙ-ᑲᥣᥲᥴk-ᑲ᥆𝗍-mძ - ᥙ⍴ძᥲ𝗍ᥱs 💫" 
