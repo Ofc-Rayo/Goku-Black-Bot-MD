@@ -13,10 +13,9 @@ import { makeWASocket } from "../lib/simple.js";
 const { CONNECTING } = ws;
 
 if (!(global.conns instanceof Array)) global.conns = [];
-global.sessions = 'sessions/session-bot';
 global.jadi = 'sessions/session-sub';
 
-const MAX_SUBBOTS = 9999;
+const MAX_SUBBOTS = 2;
 
 async function loadSubbots() {
   if (!fs.existsSync('./' + global.jadi)) return;
@@ -92,8 +91,8 @@ let handler = async (msg, { conn, args, usedPrefix, command }) => {
           args.includes("--code") ||
           args.includes("-code"))));
 
-  let rtx = `> *Vincula el subbot usando el código QR.*`;
-  let rtx2 = `> *Vincula el subbot usando el código de 8 dígitos.*`;
+  let rtx = `*Vincula el subbot usando el código QR.*`;
+  let rtx2 = `*Vincula el subbot usando el código de 8 dígitos.*`;
 
   const connectionOptions = {
     logger: pino({ level: "silent" }),
@@ -148,7 +147,7 @@ let handler = async (msg, { conn, args, usedPrefix, command }) => {
         await conn.sendMessage(
           msg.chat,
           {
-            text: `\`\`\`${pairingCode}\`\`\``,
+            text: `${pairingCode}`,
           },
           { quoted: msg }
         );
@@ -157,7 +156,7 @@ let handler = async (msg, { conn, args, usedPrefix, command }) => {
     if (connection === "open") {
       subBot.isInit = true;
       global.conns.push(subBot);
-      await conn.sendMessage(msg.chat, { text: "✅ ¡SubBot conectado con éxito!" }, { quoted: msg });
+      await conn.sendMessage(msg.chat, { text: "SubBot conectado con éxito" }, { quoted: msg });
     }
     if (
       (connection === "close" || connection === "error") &&
