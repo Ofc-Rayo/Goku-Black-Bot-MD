@@ -18,10 +18,10 @@ global.jadi = 'sessions/session-sub';
 const MAX_SUBBOTS = 2;
 
 async function loadSubbots() {
-  if (!fs.existsSync('./' + global.jadi)) return;
-  const serbotFolders = fs.readdirSync('./' + global.jadi);
+  if (!fs.existsSync(global.jadi)) return;
+  const serbotFolders = fs.readdirSync(global.jadi);
   for (const folder of serbotFolders) {
-    const folderPath = `./${global.jadi}/${folder}`;
+    const folderPath = `${global.jadi}/${folder}`;
     if (!fs.statSync(folderPath).isDirectory()) continue;
     if (global.conns.length >= MAX_SUBBOTS) break;
     try {
@@ -56,40 +56,33 @@ async function loadSubbots() {
       conn.ev.on('messages.upsert', conn.handler);
       conn.ev.on('connection.update', conn.connectionUpdate);
       conn.ev.on('creds.update', conn.credsUpdate);
-    } catch (e) { }
+    } catch (e) {}
   }
 }
 loadSubbots().catch(() => {});
 
 let handler = async (msg, { conn, args, usedPrefix, command }) => {
   if (global.conns.length >= MAX_SUBBOTS) {
-    return conn.reply(msg.chat, `*Lo siento se ah alcanzado el limite de ${MAX_SUBBOTS} subbots. Por favor, intenta mas tarde.*`, msg);
+    return conn.reply(msg.chat, `*Lo siento, se ha alcanzado el límite de ${MAX_SUBBOTS} subbots.*`, msg);
   }
   let userJid = msg.mentionedJid && msg.mentionedJid[0] ? msg.mentionedJid[0] : msg.fromMe ? conn.user.jid : msg.sender;
-  let userName = "" + userJid.split`@`[0];
-  let subbotPath = `./${global.jadi}/${userName}`;
-  
+  let userName = userJid.split`@`[0];
+  let subbotPath = `${global.jadi}/${userName}`;
+
   if (!fs.existsSync(subbotPath)) fs.mkdirSync(subbotPath, { recursive: true });
   if (args[0]) fs.writeFileSync(`${subbotPath}/creds.json`, JSON.stringify(JSON.parse(Buffer.from(args[0], "base64").toString("utf-8")), null, "\t"));
 
   if (fs.existsSync(`${subbotPath}/creds.json`)) {
     let creds = JSON.parse(fs.readFileSync(`${subbotPath}/creds.json`));
-    if (creds && creds.registered === false) {
-      fs.unlinkSync(`${subbotPath}/creds.json`);
-    }
+    if (creds && creds.registered === false) fs.unlinkSync(`${subbotPath}/creds.json`);
   }
-  
+
   let { version } = await fetchLatestBaileysVersion();
   const { state, saveCreds } = await useMultiFileAuthState(subbotPath);
 
-  const fromCommand = true; // puedes ajustar si usas esta función recursiva
   const mcode =
-    fromCommand &&
-    (command === "code" ||
-      (args &&
-        (args.includes("code") ||
-          args.includes("--code") ||
-          args.includes("-code"))));
+    command === "code" ||
+    (args && (args.includes("code") || args.includes("--code") || args.includes("-code")));
 
   let rtx = `*Vincula el subbot usando el código QR.*`;
   let rtx2 = `*Vincula el subbot usando el código de 8 dígitos.*`;
@@ -110,7 +103,7 @@ let handler = async (msg, { conn, args, usedPrefix, command }) => {
     syncFullHistory: false,
     generateHighQualityLinkPreview: true,
     defaultQueryTimeoutMs: undefined,
-    getMessage: async (key) => undefined,
+    getMessage: async () => undefined,
   };
 
   let subBot = makeWASocket(connectionOptions);
@@ -121,50 +114,37 @@ let handler = async (msg, { conn, args, usedPrefix, command }) => {
     const statusCode =
       lastDisconnect?.error?.output?.statusCode ||
       lastDisconnect?.error?.output?.payload?.statusCode;
+
     if (isNewLogin) subBot.isInit = false;
-    // QR Normal
+
+    // QR modo normal
     if (qr && !mcode) {
-      await conn.sendMessage(
-        msg.chat,
-        {
-          image: await qrcode.toBuffer(qr, { scale: 8 }),
-          caption: rtx,
-        },
-        { quoted: msg }
-      );
+      await conn.sendMessage(msg.chat, {
+        image: await qrcode.toBuffer(qr, { scale: 8 }),
+        caption: rtx,
+      }, { quoted: msg });
     }
-    // Código 8 dígitos
+
+    // QR con código de 8 dígitos (pairing code)
     if (qr && mcode) {
-      await conn.sendMessage(
-        msg.chat,
-        {
-          text: rtx2,
-        },
-        { quoted: msg }
-      );
+      await conn.sendMessage(msg.chat, { text: rtx2 }, { quoted: msg });
       setTimeout(async () => {
         let pairingCode = await subBot.requestPairingCode(msg.sender.split`@`[0]);
-        await conn.sendMessage(
-          msg.chat,
-          {
-            text: `${pairingCode}`,
-          },
-          { quoted: msg }
-        );
+        await conn.sendMessage(msg.chat, { text: `${pairingCode}` }, { quoted: msg });
       }, 3000);
     }
+
     if (connection === "open") {
       subBot.isInit = true;
       global.conns.push(subBot);
       await conn.sendMessage(msg.chat, { text: "SubBot conectado con éxito" }, { quoted: msg });
     }
-    if (
-      (connection === "close" || connection === "error") &&
-      statusCode === DisconnectReason.loggedOut
-    ) {
+
+    if ((connection === "close" || connection === "error") && statusCode === DisconnectReason.loggedOut) {
       fs.rmSync(subbotPath, { recursive: true, force: true });
     }
   }
+
   let handlerModule = await import("../handler.js");
   subBot.handler = handlerModule.handler.bind(subBot);
   subBot.connectionUpdate = handleConnectionUpdate.bind(subBot);
@@ -173,17 +153,16 @@ let handler = async (msg, { conn, args, usedPrefix, command }) => {
   subBot.ev.on("connection.update", subBot.connectionUpdate);
   subBot.ev.on("creds.update", subBot.credsUpdate);
 
-  setInterval(async () => {
+  setInterval(() => {
     if (!subBot.user) {
-      try {
-        subBot.ws.close();
-      } catch {}
+      try { subBot.ws.close(); } catch {}
       subBot.ev.removeAllListeners();
       let index = global.conns.indexOf(subBot);
       if (index >= 0) global.conns.splice(index, 1);
     }
   }, 60000);
 };
+
 handler.help = ["serbot", "serbot --code", "code"];
 handler.tags = ["serbot"];
 handler.command = ["jadibot", "serbot", "code"];
