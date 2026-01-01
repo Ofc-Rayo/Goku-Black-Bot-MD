@@ -1,4 +1,4 @@
-const we = 5000
+/*const we = 5000
 let cooldown = 604800000 // 7 días
 
 const mssg = {
@@ -40,4 +40,4 @@ function msToTime(duration) {
   var days = Math.floor(duration / (1000 * 60 * 60 * 24))
 
   return `${days} ${mssg.day} ${hours} ${mssg.hour} ${minutes} ${mssg.minute}`
-}
+}*/
