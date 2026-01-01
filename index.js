@@ -205,8 +205,8 @@ console.log(chalk.red.bold(`
 ╰───────────────────╼`))}
 }
         if (connection === "open") {
-        await joinChannels(conn)
-            console.log(chalk.bold.blueBright('
+    await joinChannels(conn)
+    console.log(chalk.bold.blueBright(`
 ✩ ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ ✦  C O N E C T A D O  🔥  ✦ ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ ✩
 │
 │     G O K U   B L A C K  
@@ -216,8 +216,9 @@ console.log(chalk.red.bold(`
 │   ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
 │   ⠘⠿⣿⣿⣿⣿⣿⣿⣿⠿⠃
 │
-✩ ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ ✦  ONLINE  ✦ ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ ✩'))
-        }
+✩ ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ ✦  ONLINE  ✦ ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ ✩
+`))
+}
 let reason = new Boom(lastDisconnect?.error)?.output?.statusCode
 if (connection === "close") {
 if ([401, 440, 428, 405].includes(reason)) {      
