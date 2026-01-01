@@ -25,6 +25,5 @@ const handler = async (m, { conn, text }) => {
 };
 
 handler.command = ['programar'];
-handler.rowner = true;
 
 export default handler;
