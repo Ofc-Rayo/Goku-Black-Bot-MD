@@ -18,7 +18,6 @@ const { CONNECTING } = ws
 import { makeWASocket } from '../lib/simple.js'
 
 if (!Array.isArray(global.conns)) global.conns = []
-
 global.sessions = 'sessions/session-bot'
 global.jadi = 'sessions/session-sub'
 
@@ -27,11 +26,9 @@ let handler = async (m, { conn: _conn, args, usedPrefix, command, isOwner }) => 
     if (!((args[0] && args[0] == 'plz') || (await global.conn).user.jid == _conn.user.jid)) {
         throw `📌 Solo puedes usar esto desde el bot principal.`
     }
-
     async function bbts() {
         let authFolderB = crypto.randomBytes(10).toString('hex').slice(0, 8)
         let sessionPath = `${global.jadi}/${authFolderB}`
-
         if (!fs.existsSync(sessionPath)){
             fs.mkdirSync(sessionPath, { recursive: true })
         }
@@ -42,7 +39,6 @@ let handler = async (m, { conn: _conn, args, usedPrefix, command, isOwner }) => 
             )
         }
 
-        // Límite de 5 subbots
         const MAX_SUBBOTS = 5
         const activeConns = global.conns.filter(c => c.user && c.ws?.socket && c.ws.socket.readyState !== ws.CLOSED)
         if (activeConns.length >= MAX_SUBBOTS) {
@@ -59,7 +55,6 @@ let handler = async (m, { conn: _conn, args, usedPrefix, command, isOwner }) => 
         const MethodMobile = process.argv.includes("mobile")
 
         const rl = readline.createInterface({ input: process.stdin, output: process.stdout })
-        const question = (texto) => new Promise((resolver) => rl.question(texto, resolver))
 
         const connectionOptions = {
             logger: pino({ level: 'silent' }),
@@ -82,14 +77,13 @@ let handler = async (m, { conn: _conn, args, usedPrefix, command, isOwner }) => 
             defaultQueryTimeoutMs: undefined,
             version
         }
-
         let conn = makeWASocket(connectionOptions)
-
         if (methodCode && !conn.authState.creds.registered) {
             if (!phoneNumber) process.exit(0)
             let cleanedNumber = phoneNumber.replace(/[^0-9]/g, '')
-            if (!Object.keys(PHONENUMBER_MCC).some(v => cleanedNumber.startsWith(v))) process.exit(0)
-
+            if (!PHONENUMBER_MCC || typeof PHONENUMBER_MCC !== 'object' || !Object.keys(PHONENUMBER_MCC).some(v => cleanedNumber.startsWith(v))) {
+                process.exit(0)
+            }
             setTimeout(async () => {
                 let codeBot = await conn.requestPairingCode(cleanedNumber)
                 codeBot = codeBot?.match(/.{1,4}/g)?.join("-") || codeBot
@@ -97,14 +91,11 @@ let handler = async (m, { conn: _conn, args, usedPrefix, command, isOwner }) => 
                 rl.close()
             }, 3000)
         }
-
         conn.isInit = false
         let isInit = true
-
         async function connectionUpdate(update) {
             const { connection, lastDisconnect, isNewLogin, qr } = update
             if (isNewLogin) conn.isInit = true
-
             const code = lastDisconnect?.error?.output?.statusCode || lastDisconnect?.error?.output?.payload?.statusCode
             if (code && code !== DisconnectReason.loggedOut && conn?.ws.socket == null) {
                 let i = global.conns.indexOf(conn)
@@ -112,9 +103,7 @@ let handler = async (m, { conn: _conn, args, usedPrefix, command, isOwner }) => 
                 delete global.conns[i]
                 global.conns.splice(i, 1)
             }
-
             if (global.db.data == null) loadDatabase()
-
             if (connection == 'open') {
                 conn.isInit = true
                 global.conns.push(conn)
@@ -123,7 +112,6 @@ let handler = async (m, { conn: _conn, args, usedPrefix, command, isOwner }) => 
                 parent.sendMessage(conn.user.jid, { text: usedPrefix + command + " " + Buffer.from(fs.readFileSync(`${sessionPath}/creds.json`), "utf-8").toString("base64") }, { quoted: m })
             }
         }
-
         setInterval(async () => {
             if (!conn.user) {
                 try { conn.ws.close() } catch { }
@@ -134,22 +122,18 @@ let handler = async (m, { conn: _conn, args, usedPrefix, command, isOwner }) => 
                 global.conns.splice(i, 1)
             }
         }, 60000)
-
         let handlerModule = await import('../handler.js')
         let creloadHandler = async function (restatConn) {
             try {
-                const Handler = await import(`../handler.js?update=${Date.now()}`).catch(console.error)
+                const Handler = await import(`../handler.js?update=${Date.now()}`).catch(() => ({}))
                 if (Handler && typeof Handler === 'object' && Object.keys(Handler).length) handlerModule = Handler
-            } catch (e) {
-                console.error(e)
-            }
+            } catch (e) {}
             if (restatConn) {
                 try { conn.ws.close() } catch { }
                 conn.ev.removeAllListeners()
                 conn = makeWASocket(connectionOptions)
                 isInit = true
             }
-
             if (!isInit) {
                 conn.ev.off('messages.upsert', conn.handler)
                 conn.ev.off('group-participants.update', conn.participantsUpdate)
@@ -158,13 +142,11 @@ let handler = async (m, { conn: _conn, args, usedPrefix, command, isOwner }) => 
                 conn.ev.off('connection.update', conn.connectionUpdate)
                 conn.ev.off('creds.update', conn.credsUpdate)
             }
-
             conn.handler = handlerModule.handler.bind(conn)
             conn.participantsUpdate = handlerModule.participantsUpdate.bind(conn)
             conn.groupsUpdate = handlerModule.groupsUpdate.bind(conn)
             conn.connectionUpdate = connectionUpdate.bind(conn)
             conn.credsUpdate = saveCreds.bind(conn, true)
-
             conn.ev.on('messages.upsert', conn.handler)
             conn.ev.on('group-participants.update', conn.participantsUpdate)
             conn.ev.on('groups.update', conn.groupsUpdate)
@@ -177,12 +159,10 @@ let handler = async (m, { conn: _conn, args, usedPrefix, command, isOwner }) => 
     }
     bbts()
 }
-
 handler.help = ['jadibot']
 handler.tags = ['jadibot']
 handler.command = ['code', 'serbot', 'jadibot', 'botclone', 'clonebot']
 handler.rowner = false
-
 export default handler
 
 function sleep(ms) {
