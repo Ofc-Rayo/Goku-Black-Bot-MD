@@ -28,7 +28,7 @@ export async function handler(chatUpdate) {
         if (!m)
             return
         m.exp = 0
-        m.limit = false
+        m.ki = false
         try {
             let user = global.db.data.users[m.sender]
             if (typeof user !== 'object')
@@ -36,8 +36,8 @@ export async function handler(chatUpdate) {
             if (user) {
                 if (!isNumber(user.exp))
                     user.exp = 0
-                if (!isNumber(user.limit))
-                    user.limit = 10
+                if (!isNumber(user.ki))
+                    user.ki = 10
                 if (!('premium' in user)) 
                     user.premium = false
                 if (!user.premium) 
@@ -67,7 +67,7 @@ export async function handler(chatUpdate) {
             } else 
                 global.db.data.users[m.sender] = {
                     exp: 0,
-                    limit: 10,
+                    ki: 10,
                     registered: false,
                     name: m.name,
                     age: -1,
@@ -210,9 +210,9 @@ export async function handler(chatUpdate) {
         const isBotAdmin = !!bot?.admin || bot?.admin === 'admin'
 
         const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins')
-        for (let name in global.plugins) {
+        for (let name in (global.plugins || {})) {
             let plugin = global.plugins[name]
-            if (!plugin)
+            if (!plugin || typeof plugin !== 'object')
                 continue
             if (plugin.disabled)
                 continue
@@ -354,8 +354,8 @@ export async function handler(chatUpdate) {
                     m.reply('chirrido -_-')
                 else
                     m.exp += xp
-                if (!isPrems && plugin.limit && global.db.data.users[m.sender].limit < plugin.limit * 1) {
-                    conn.reply(m.chat, `Se agotaron tus *✳️ Eris*`, m, rcanal)
+                if (!isPrems && plugin.ki && global.db.data.users[m.sender].ki < plugin.ki * 1) {
+                    conn.reply(m.chat, `Se agotaron tus *⚡ Ki*`, m, rcanal)
                     continue
                 }
                 let extra = {
@@ -385,7 +385,7 @@ export async function handler(chatUpdate) {
                 try {
                     await plugin.call(this, m, extra)
                     if (!isPrems)
-                        m.limit = m.limit || plugin.limit || false
+                        m.ki = m.ki || plugin.ki || false
                 } catch (e) {
                     m.error = e
                     console.error(e)
@@ -403,8 +403,8 @@ export async function handler(chatUpdate) {
                             console.error(e)
                         }
                     }
-                    if (m.limit)
-                        conn.reply(m.chat, `Utilizaste *${+m.limit}* ✳️`, m, rcanal)
+                    if (m.ki)
+                        conn.reply(m.chat, `Utilizaste *${+m.ki}* ⚡`, m, rcanal)
                 }
                 break
             }
@@ -422,7 +422,7 @@ export async function handler(chatUpdate) {
         if (m) {
             if (m.sender && (user = global.db.data.users[m.sender])) {
                 user.exp += m.exp
-                user.limit -= m.limit * 1
+                user.ki -= m.ki * 1
             }
 
             let stat
@@ -467,16 +467,17 @@ export async function handler(chatUpdate) {
 
 global.dfail = (type, m, conn, usedPrefix) => {
     let msg = {
-    rowner: "「👑」 *Esta función solo puede ser usada por mi creador*",
-    owner: "「👑」 *Esta función solo puede ser usada por mi desarrollador.*",
-    mods: "「🤴🏻」 *Esta función solo puede ser usada por mis desarrolladores.*",
-    premium: "「🍧」 *Esta función solo es para usuarios Premium.*",
-    group: "「🐢」 *Esta funcion solo puede ser ejecutada en grupos.*",
-    private: "「🍭」 *Esta función solo puede ser usada en chat privado.*",
-    admin: "「👑」 *Este comando solo puede ser usado por admins.*",
-    botAdmin: "「🚩」 *Para usar esta función debo ser admin.*",
-    unreg: "No estas registrado, no te encuentro en mi base de datos",
-    restrict: "「💫」 *Esta característica esta desactivada.*"
+        rowner: "「👑」 *Esta función solo puede ser usada por mi creador*",
+        owner: "「👑」 *Esta función solo puede ser usada por mi desarrollador.*",
+        mods: "「🤴🏻」 *Esta función solo puede ser usada por mis desarrolladores.*",
+        premium: "「🍧」 *Esta función solo es para usuarios Premium.*",
+        premsubs: '《★》Esta función solo puede ser usada por subbots premiums.',
+        group: "「🐢」 *Esta funcion solo puede ser ejecutada en grupos.*",
+        private: "「🍭」 *Esta función solo puede ser usada en chat privado.*",
+        admin: "「👑」 *Este comando solo puede ser usado por admins.*",
+        botAdmin: "「🚩」 *Para usar esta función debo ser admin.*",
+        unreg: "No estas registrado, no te encuentro en mi base de datos",
+        restrict: "「💫」 *Esta característica esta desactivada.*"
     }[type]
     if (msg) return m.reply(msg)
 }
