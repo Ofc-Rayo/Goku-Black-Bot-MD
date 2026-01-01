@@ -1,28 +1,27 @@
 import { watchFile, unwatchFile } from 'fs'
 import chalk from 'chalk'
 import { fileURLToPath } from 'url'
-import fs from 'fs';
-import * as cheerio from 'cheerio';
-import fetch from 'node-fetch';
-import axios from 'axios';
-import moment from 'moment-timezone';
+import fs from 'fs'
+import * as cheerio from 'cheerio'
+import fetch from 'node-fetch'
+import axios from 'axios'
+import moment from 'moment-timezone'
 
 global.owner = [
   ['595972157130', "ivan", true],
   ["522431268546"],
-] 
-
-global.mods = [] 
+]
+global.mods = []
 global.prems = []
 global.APIs = {
-  xteam: 'https://api.xteam.xyz', 
+  xteam: 'https://api.xteam.xyz',
   nrtm: 'https://fg-nrtm.ddns.net',
   bg: 'http://bochil.ddns.net',
   fgmods: 'https://api-fgmods.ddns.net'
 }
 global.APIKeys = {
   'https://api.xteam.xyz': 'd90a9e986e18778b',
-  'https://zenzapis.xyz': '675e34de8a', 
+  'https://zenzapis.xyz': '675e34de8a',
   'https://api-fgmods.ddns.net': 'TU-APIKEY'
 }
 
@@ -34,7 +33,6 @@ global.packsticker = (nombre) => `°.⎯⃘̶⎯̸⎯ܴ⎯̶᳞͇ࠝ⎯⃘̶⎯�
 ⴵ Hora: ${global.tiempo}`;
 
 global.packsticker2 = `°.⎯⃘̶⎯̸⎯ܴ⎯̶᳞͇ࠝ⎯⃘̶⎯̸⎯ܴ⎯̶᳞͇ࠝ⎯⃘̶⎯̸.°
-
 ${global.dev}`
 
 global.packname = '𝐆𝐨𝐤𝐮-𝐁𝐥𝐚𝐜𝐤-𝐁𝐨𝐭-𝐌𝐃 💥'
@@ -48,29 +46,28 @@ global.dev = 'Ｒａｙｏ Ｏｆｃ'
 global.textbot = '𝑮𝒐𝒌𝒖-𝑩𝒍𝒂𝒄𝒌-𝑩𝒐𝒕-𝑴𝑫 ☄︎'
 global.gt = '𝐺𝑜𝑘𝑢-𝐵𝑙𝑎𝑐𝑘-𝐵𝑜𝑡-𝑀𝐷 💥'
 global.namechannel = 'ᥬ𝑮𝑶𝑲𝑼-𝑩𝑳𝑨𝑪𝑲-𝑩𝑶𝑻-𝑴𝑫᭄'
-global.link = '';
-global.logo = ''; 
+global.link = ''
+global.logo = ''
 
 global.wait = "\`Cargando . . . Espera un momento.\`"
 global.rwait = '⌛'
 global.dmoji = '🤭'
 global.done = '✅'
-global.error = '❌' 
-global.xmoji = '🔥' 
+global.error = '❌'
+global.xmoji = '🔥'
 
-global.cheerio = cheerio;
-global.fs = fs;
-global.fetch = fetch;
-global.axios = axios;
-global.moment = moment;
+global.cheerio = cheerio
+global.fs = fs
+global.fetch = fetch
+global.axios = axios
+global.moment = moment
 
 global.sessions = 'sessions/session-bot'
 global.jadi = 'sessions/session-sub'
 global.dbname = "Data/database.json"
 
-const d = moment.tz('America/Asuncion');
-
-global.d = d.toDate();
+const d = moment.tz('America/Asuncion')
+global.d = d.toDate()
 global.locale = 'es'
 global.dia = d.format('dddd')
 global.fecha = d.format('DD/MM/YYYY')
@@ -80,6 +77,7 @@ global.tiempo = d.format('HH:mm:ss')
 global.botdate = `⫹⫺ Date : ${d.format('DD/MM/YY')}`
 global.bottime = `𝗧 𝗜 𝗠 𝗘 : ${d.format('HH:mm:ss')}`
 
+global.subbotLimit = 5
 global.multiplier = 250
 global.maxwarn = '2'
 
