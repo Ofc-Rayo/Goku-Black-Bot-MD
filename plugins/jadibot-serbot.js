@@ -21,11 +21,11 @@ let drm1 = ""
 let drm2 = ""
 
 let rtx = `╭━━━━━━━━━━━━━━━━╮
-│ 🔥 *SUB BOT - SERBOT* 🔥
+│  *SUB BOT - SERBOT* 
 ├━━━━━━━━━━━━━━━━┤
 │ Escanea este QR para ser un Sub Bot
 ├━━━━━━━━━━━━━━━━┤
-│ 💥 *Pasos para escanear:*
+│  *Pasos para escanear:*
 ├━━━━━━━━━━━━━━━━┤
 │ \`1\` : Haga clic en los 3 puntos
 │ \`2\` : Toque dispositivos vinculados
@@ -35,11 +35,11 @@ let rtx = `╭━━━━━━━━━━━━━━━━╮
 ╰━━━━━━━━━━━━━━━━╯`
 
 let rtx2 = `╭━━━━━━━━━━━━━━━━╮
-│ 🔥 *SUB BOT - SERBOT* 🔥
+│  *SUB BOT - SERBOT* 
 ├━━━━━━━━━━━━━━━━┤
 │ Usa este Código para convertirte en un Sub Bot
 ├━━━━━━━━━━━━━━━━┤
-│ 💥 *Pasos:*
+│  *Pasos:*
 ├━━━━━━━━━━━━━━━━┤
 │ \`1\` : Haga clic en los 3 puntos
 │ \`2\` : Toque dispositivos vinculados
